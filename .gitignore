@@ -10,6 +10,7 @@ backend/__pycache__/
 frontend/node_modules/
 backend/uploads/
 backend/processed/
+backend/summaries/
 backend/vector_db/
 database/*.db
 *.zip

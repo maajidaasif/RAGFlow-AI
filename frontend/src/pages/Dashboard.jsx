@@ -9,6 +9,7 @@ import {
   FileText,
   BrainCircuit,
   FileOutput,
+  Search,
   ArrowRight,
   Plus,
 } from "lucide-react";
@@ -19,14 +20,11 @@ function Dashboard() {
   const navigate = useNavigate();
 
   // Logged-in user
-  const user = JSON.parse(
-    localStorage.getItem("user")
-  );
+  const user = JSON.parse(localStorage.getItem("user"));
 
-  const userName =
-    user?.full_name || "Researcher";
+  const userName = user?.full_name || "Researcher";
 
-  // Greeting based on current time
+  // Greeting
   const hour = new Date().getHours();
 
   let greeting = "";
@@ -39,53 +37,54 @@ function Dashboard() {
     greeting = "Good Evening";
   }
 
-  // Dashboard Statistics
-  const [totalPapers, setTotalPapers] =
-    useState(0);
+  // Dashboard Data
+  const [dashboard, setDashboard] = useState({
+    total_papers: 0,
+    total_analysis: 0,
+    paper_comparisons: 0,
+    research_gap: 0,
+    literature_surveys: 0,
+    domains: [],
+    recent_activity: [],
+  });
 
-  const totalAnalysis =
-    JSON.parse(
-      localStorage.getItem("analysis")
-    )?.length || 0;
+  const [loading, setLoading] = useState(true);
 
-  const totalReports =
-    JSON.parse(
-      localStorage.getItem("reports")
-    )?.length || 0;
-
-  // Load total papers from backend
   const loadDashboard = async () => {
     try {
       const response = await fetch(
-        "http://127.0.0.1:5000/papers"
+        "http://127.0.0.1:5000/dashboard"
       );
 
       if (!response.ok) {
-        throw new Error(
-          "Failed to load papers"
-        );
+        throw new Error("Failed to load dashboard");
       }
 
       const data = await response.json();
 
-      setTotalPapers(
-        Array.isArray(data)
-          ? data.length
-          : 0
-      );
+      setDashboard(data);
     } catch (error) {
-      console.log(
-        "Dashboard Error:",
-        error
-      );
-
-      setTotalPapers(0);
+      console.error("Dashboard Error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     loadDashboard();
   }, []);
+
+  if (loading) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center h-[70vh]">
+          <h2 className="text-xl font-semibold">
+            Loading Dashboard...
+          </h2>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
@@ -208,205 +207,201 @@ function Dashboard() {
 
       {/* Statistics */}
 
-      <section className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+<section className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
 
-        {/* Total Papers */}
+  {/* Research Papers */}
 
-        <div
-          className="
-            rounded-2xl
-            border
-            border-[var(--border-color)]
-            bg-[var(--card-bg)]
-            p-6
-            transition
-            hover:bg-[var(--card-hover)]
-          "
-        >
+  <div
+    className="
+      rounded-2xl
+      border
+      border-[var(--border-color)]
+      bg-[var(--card-bg)]
+      p-6
+      transition
+      hover:bg-[var(--card-hover)]
+    "
+  >
 
-          <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between">
 
-            <p className="text-sm font-medium text-[var(--secondary-text)]">
-              Total Papers
-            </p>
+      <p className="text-sm font-medium text-[var(--secondary-text)]">
 
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--card-hover)]">
+        Research Papers
 
-              <FileText
-                size={20}
-                className="text-[var(--primary-text)]"
-              />
+      </p>
 
-            </div>
+      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--card-hover)]">
 
-          </div>
+        <FileText
+          size={22}
+          className="text-[var(--primary-text)]"
+        />
 
-          <h2 className="mt-6 text-4xl font-semibold text-[var(--primary-text)]">
+      </div>
 
-            {totalPapers}
+    </div>
 
-          </h2>
+    <h2 className="mt-6 text-4xl font-bold text-[var(--primary-text)]">
 
-          <p className="mt-2 text-sm text-[var(--muted-text)]">
+      {dashboard.total_papers}
 
-            Uploaded research papers
+    </h2>
 
-          </p>
+    <p className="mt-2 text-sm text-[var(--muted-text)]">
 
-        </div>
+      Uploaded papers
 
-        {/* AI Analyses */}
+    </p>
 
-        <div
-          className="
-            rounded-2xl
-            border
-            border-[var(--border-color)]
-            bg-[var(--card-bg)]
-            p-6
-            transition
-            hover:bg-[var(--card-hover)]
-          "
-        >
+  </div>
 
-          <div className="flex items-center justify-between">
+  {/* AI Analyses */}
 
-            <p className="text-sm font-medium text-[var(--secondary-text)]">
+  <div
+    className="
+      rounded-2xl
+      border
+      border-[var(--border-color)]
+      bg-[var(--card-bg)]
+      p-6
+      transition
+      hover:bg-[var(--card-hover)]
+    "
+  >
 
-              AI Analyses
+    <div className="flex items-center justify-between">
 
-            </p>
+      <p className="text-sm font-medium text-[var(--secondary-text)]">
 
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--card-hover)]">
+        AI Analyses
 
-              <BrainCircuit
-                size={20}
-                className="text-[var(--primary-text)]"
-              />
+      </p>
 
-            </div>
+      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--card-hover)]">
 
-          </div>
+        <BrainCircuit
+          size={22}
+          className="text-[var(--primary-text)]"
+        />
 
-          <h2 className="mt-6 text-4xl font-semibold text-[var(--primary-text)]">
+      </div>
 
-            {totalAnalysis}
+    </div>
 
-          </h2>
+    <h2 className="mt-6 text-4xl font-bold text-[var(--primary-text)]">
 
-          <p className="mt-2 text-sm text-[var(--muted-text)]">
+      {dashboard.total_analysis}
 
-            Completed analyses
+    </h2>
 
-          </p>
+    <p className="mt-2 text-sm text-[var(--muted-text)]">
 
-        </div>
+      Completed analyses
 
-        {/* Reports */}
+    </p>
 
-        <div
-          className="
-            rounded-2xl
-            border
-            border-[var(--border-color)]
-            bg-[var(--card-bg)]
-            p-6
-            transition
-            hover:bg-[var(--card-hover)]
-          "
-        >
+  </div>
 
-          <div className="flex items-center justify-between">
+  {/* Literature Surveys */}
 
-            <p className="text-sm font-medium text-[var(--secondary-text)]">
+  <div
+    className="
+      rounded-2xl
+      border
+      border-[var(--border-color)]
+      bg-[var(--card-bg)]
+      p-6
+      transition
+      hover:bg-[var(--card-hover)]
+    "
+  >
 
-              Reports
+    <div className="flex items-center justify-between">
 
-            </p>
+      <p className="text-sm font-medium text-[var(--secondary-text)]">
 
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--card-hover)]">
+        Literature Surveys
 
-              <FileOutput
-                size={20}
-                className="text-[var(--primary-text)]"
-              />
+      </p>
 
-            </div>
+      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--card-hover)]">
 
-          </div>
+        <FileOutput
+          size={22}
+          className="text-[var(--primary-text)]"
+        />
 
-          <h2 className="mt-6 text-4xl font-semibold text-[var(--primary-text)]">
+      </div>
 
-            {totalReports}
+    </div>
 
-          </h2>
+    <h2 className="mt-6 text-4xl font-bold text-[var(--primary-text)]">
 
-          <p className="mt-2 text-sm text-[var(--muted-text)]">
+      {dashboard.literature_surveys}
 
-            Generated reports
+    </h2>
 
-          </p>
+    <p className="mt-2 text-sm text-[var(--muted-text)]">
 
-        </div>
+      Generated surveys
 
-        {/* AI Status */}
+    </p>
 
-        <div
-          className="
-            rounded-2xl
-            border
-            border-[var(--border-color)]
-            bg-[var(--card-bg)]
-            p-6
-            transition
-            hover:bg-[var(--card-hover)]
-          "
-        >
+  </div>
 
-          <div className="flex items-center justify-between">
+  {/* Research Gaps */}
 
-            <p className="text-sm font-medium text-[var(--secondary-text)]">
+  <div
+    className="
+      rounded-2xl
+      border
+      border-[var(--border-color)]
+      bg-[var(--card-bg)]
+      p-6
+      transition
+      hover:bg-[var(--card-hover)]
+    "
+  >
 
-              AI Status
+    <div className="flex items-center justify-between">
 
-            </p>
+      <p className="text-sm font-medium text-[var(--secondary-text)]">
 
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--card-hover)]">
+        Research Gaps
 
-              <Sparkles
-                size={20}
-                className="text-[var(--primary-text)]"
-              />
+      </p>
 
-            </div>
+      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--card-hover)]">
 
-          </div>
+        <Search
+          size={22}
+          className="text-[var(--primary-text)]"
+        />
 
-          <div className="mt-6 flex items-center gap-3">
+      </div>
 
-            <span className="h-2.5 w-2.5 rounded-full bg-[var(--primary-text)]" />
+    </div>
 
-            <h2 className="text-2xl font-semibold text-[var(--primary-text)]">
+    <h2 className="mt-6 text-4xl font-bold text-[var(--primary-text)]">
 
-              Ready
+      {dashboard.research_gap}
 
-            </h2>
+    </h2>
 
-          </div>
+    <p className="mt-2 text-sm text-[var(--muted-text)]">
 
-          <p className="mt-2 text-sm text-[var(--muted-text)]">
+      Gap detection analyses
 
-            Local AI available
+    </p>
 
-          </p>
+  </div>
 
-        </div>
-
-      </section>
+</section>
 
       {/* Start Research */}
 
-      {totalPapers === 0 && (
+      {dashboard.total_papers === 0 && (
 
         <section
           className="
@@ -471,244 +466,248 @@ function Dashboard() {
         </section>
 
       )}
+    {/* Research Overview */}
 
-      {/* Quick Actions */}
+<section className="mt-10">
 
-      <section className="mt-12">
+  <div className="flex items-center justify-between">
 
-        <div>
+    <div>
 
-          <h2 className="text-2xl font-semibold text-[var(--primary-text)]">
+      <h2 className="text-2xl font-semibold text-[var(--primary-text)]">
+        Research Overview
+      </h2>
 
-            Quick Actions
+      <p className="mt-2 text-sm text-[var(--muted-text)]">
+        Domains analyzed by ResearchMind AI.
+      </p>
 
-          </h2>
+    </div>
+
+  </div>
+
+  <div className="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+
+    {dashboard.domains.length === 0 ? (
+
+      <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--card-bg)] p-8">
+
+        <p className="text-[var(--muted-text)]">
+          No research domains available.
+        </p>
+
+      </div>
+
+    ) : (
+
+      dashboard.domains.map((item, index) => (
+
+        <div
+          key={index}
+          className="
+            rounded-2xl
+            border
+            border-[var(--border-color)]
+            bg-[var(--card-bg)]
+            p-6
+            transition
+            hover:bg-[var(--card-hover)]
+          "
+        >
+
+          <BrainCircuit
+            size={30}
+            className="text-[var(--primary-text)]"
+          />
+
+          <h3 className="mt-4 text-lg font-semibold text-[var(--primary-text)]">
+            {item.domain}
+          </h3>
 
           <p className="mt-2 text-sm text-[var(--muted-text)]">
-
-            Access your main research tools.
-
+            {item.count} Analysis
           </p>
 
         </div>
 
-        <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+      ))
 
-          {/* Upload Papers */}
+    )}
 
-          <button
-            onClick={() =>
-              navigate("/upload")
-            }
-            className="
-              group
-              rounded-2xl
-              border
-              border-[var(--border-color)]
-              bg-[var(--card-bg)]
-              p-6
-              text-left
-              transition
-              hover:bg-[var(--card-hover)]
-            "
-          >
+  </div>
 
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--card-hover)]">
+</section>
+    
 
-              <Upload
-                size={21}
-                className="text-[var(--primary-text)]"
-              />
+      {/* AI Research Modules */}
 
-            </div>
+<section className="mt-12">
 
-            <h3 className="mt-6 text-lg font-semibold text-[var(--primary-text)]">
+  <div>
 
-              Upload Papers
+    <h2 className="text-2xl font-semibold text-[var(--primary-text)]">
 
-            </h3>
+      AI Research Modules
 
-            <p className="mt-2 text-sm leading-6 text-[var(--muted-text)]">
+    </h2>
 
-              Add one or more research papers to your workspace.
+    <p className="mt-2 text-sm text-[var(--muted-text)]">
 
-            </p>
+      Access the core AI features available in ResearchMind AI.
 
-            <div className="mt-5 flex items-center gap-2 text-sm font-medium text-[var(--secondary-text)]">
+    </p>
 
-              Open
+  </div>
 
-              <ArrowRight
-                size={16}
-                className="transition group-hover:translate-x-1"
-              />
+  <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
 
-            </div>
+    {/* Upload Papers */}
 
-          </button>
+    <button
+      onClick={() => navigate("/upload")}
+      className="
+        group
+        rounded-2xl
+        border
+        border-[var(--border-color)]
+        bg-[var(--card-bg)]
+        p-6
+        text-left
+        transition
+        hover:bg-[var(--card-hover)]
+      "
+    >
 
-          {/* My Papers */}
+      <Upload
+        size={36}
+        className="text-[var(--primary-text)]"
+      />
 
-          <button
-            onClick={() =>
-              navigate("/papers")
-            }
-            className="
-              group
-              rounded-2xl
-              border
-              border-[var(--border-color)]
-              bg-[var(--card-bg)]
-              p-6
-              text-left
-              transition
-              hover:bg-[var(--card-hover)]
-            "
-          >
+      <h3 className="mt-5 text-lg font-semibold text-[var(--primary-text)]">
 
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--card-hover)]">
+        Upload Papers
 
-              <Library
-                size={21}
-                className="text-[var(--primary-text)]"
-              />
+      </h3>
 
-            </div>
+      <p className="mt-2 text-sm leading-6 text-[var(--muted-text)]">
 
-            <h3 className="mt-6 text-lg font-semibold text-[var(--primary-text)]">
+        Upload one or more research papers for AI analysis.
 
-              My Papers
+      </p>
 
-            </h3>
+    </button>
 
-            <p className="mt-2 text-sm leading-6 text-[var(--muted-text)]">
+    {/* Literature Survey */}
 
-              Browse and manage all uploaded research papers.
+    <button
+      onClick={() => navigate("/literature-survey")}
+      className="
+        group
+        rounded-2xl
+        border
+        border-[var(--border-color)]
+        bg-[var(--card-bg)]
+        p-6
+        text-left
+        transition
+        hover:bg-[var(--card-hover)]
+      "
+    >
 
-            </p>
+      <FileOutput
+        size={28}
+        className="text-[var(--primary-text)]"
+      />
 
-            <div className="mt-5 flex items-center gap-2 text-sm font-medium text-[var(--secondary-text)]">
+      <h3 className="mt-5 text-lg font-semibold text-[var(--primary-text)]">
 
-              Open
+        Literature Survey
 
-              <ArrowRight
-                size={16}
-                className="transition group-hover:translate-x-1"
-              />
+      </h3>
 
-            </div>
+      <p className="mt-2 text-sm leading-6 text-[var(--muted-text)]">
 
-          </button>
+        Generate a structured literature survey from uploaded papers.
 
-          {/* Analysis History */}
+      </p>
 
-          <button
-            onClick={() =>
-              navigate("/history")
-            }
-            className="
-              group
-              rounded-2xl
-              border
-              border-[var(--border-color)]
-              bg-[var(--card-bg)]
-              p-6
-              text-left
-              transition
-              hover:bg-[var(--card-hover)]
-            "
-          >
+    </button>
 
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--card-hover)]">
+    {/* Research Gap */}
 
-              <History
-                size={21}
-                className="text-[var(--primary-text)]"
-              />
+    <button
+      onClick={() => navigate("/research-gap")}
+      className="
+        group
+        rounded-2xl
+        border
+        border-[var(--border-color)]
+        bg-[var(--card-bg)]
+        p-6
+        text-left
+        transition
+        hover:bg-[var(--card-hover)]
+      "
+    >
 
-            </div>
+      <Search
+        size={28}
+        className="text-[var(--primary-text)]"
+      />
 
-            <h3 className="mt-6 text-lg font-semibold text-[var(--primary-text)]">
+      <h3 className="mt-5 text-lg font-semibold text-[var(--primary-text)]">
 
-              Analysis History
+        Research Gap Detection
 
-            </h3>
+      </h3>
 
-            <p className="mt-2 text-sm leading-6 text-[var(--muted-text)]">
+      <p className="mt-2 text-sm leading-6 text-[var(--muted-text)]">
 
-              Review your previous AI research analyses.
+        Identify unexplored areas and future research opportunities.
 
-            </p>
+      </p>
 
-            <div className="mt-5 flex items-center gap-2 text-sm font-medium text-[var(--secondary-text)]">
+    </button>
 
-              Open
+    {/* Analysis History */}
 
-              <ArrowRight
-                size={16}
-                className="transition group-hover:translate-x-1"
-              />
+    <button
+      onClick={() => navigate("/history")}
+      className="
+        group
+        rounded-2xl
+        border
+        border-[var(--border-color)]
+        bg-[var(--card-bg)]
+        p-6
+        text-left
+        transition
+        hover:bg-[var(--card-hover)]
+      "
+    >
 
-            </div>
+      <History
+        size={28}
+        className="text-[var(--primary-text)]"
+      />
 
-          </button>
+      <h3 className="mt-5 text-lg font-semibold text-[var(--primary-text)]">
 
-          {/* New Analysis */}
+        Analysis History
 
-          <button
-            onClick={() =>
-              navigate("/upload")
-            }
-            className="
-              group
-              rounded-2xl
-              border
-              border-[var(--border-color)]
-              bg-[var(--card-bg)]
-              p-6
-              text-left
-              transition
-              hover:bg-[var(--card-hover)]
-            "
-          >
+      </h3>
 
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--card-hover)]">
+      <p className="mt-2 text-sm leading-6 text-[var(--muted-text)]">
 
-              <Sparkles
-                size={21}
-                className="text-[var(--primary-text)]"
-              />
+        View previous literature surveys, comparisons and research gaps.
 
-            </div>
+      </p>
 
-            <h3 className="mt-6 text-lg font-semibold text-[var(--primary-text)]">
+    </button>
 
-              New Analysis
+  </div>
 
-            </h3>
-
-            <p className="mt-2 text-sm leading-6 text-[var(--muted-text)]">
-
-              Begin a new AI-powered research workflow.
-
-            </p>
-
-            <div className="mt-5 flex items-center gap-2 text-sm font-medium text-[var(--secondary-text)]">
-
-              Start
-
-              <ArrowRight
-                size={16}
-                className="transition group-hover:translate-x-1"
-              />
-
-            </div>
-
-          </button>
-
-        </div>
-
-      </section>
+</section>
 
       {/* Recent Activity */}
 
@@ -756,65 +755,84 @@ function Dashboard() {
 
         </div>
 
-        <div
-          className="
-            mt-6
-            rounded-2xl
-            border
-            border-[var(--border-color)]
-            bg-[var(--card-bg)]
-            px-8
-            py-14
-            text-center
-          "
-        >
+   {dashboard.recent_activity.length === 0 ? (
 
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--card-hover)]">
+  <div
+    className="
+      mt-6
+      rounded-2xl
+      border
+      border-[var(--border-color)]
+      bg-[var(--card-bg)]
+      px-8
+      py-14
+      text-center
+    "
+  >
 
-            <History
-              size={25}
-              className="text-[var(--secondary-text)]"
-            />
+    <History
+      size={40}
+      className="mx-auto text-[var(--secondary-text)]"
+    />
 
-          </div>
+    <h3 className="mt-6 text-xl font-semibold text-[var(--primary-text)]">
 
-          <h3 className="mt-6 text-xl font-semibold text-[var(--primary-text)]">
+      No Recent Activity
 
-            No recent activity
+    </h3>
 
-          </h3>
+    <p className="mt-3 text-[var(--muted-text)]">
 
-          <p className="mx-auto mt-3 max-w-lg leading-7 text-[var(--muted-text)]">
+      Your completed AI analyses will appear here.
 
-            Your uploaded papers, completed AI
-            analyses, and generated research reports
-            will appear here.
+    </p>
 
-          </p>
+  </div>
 
-          <button
-            onClick={() =>
-              navigate("/upload")
-            }
-            className="
-              mt-7
-              rounded-xl
-              border
-              border-[var(--border-color)]
-              px-6
-              py-3
-              font-medium
-              text-[var(--primary-text)]
-              transition
-              hover:bg-[var(--card-hover)]
-            "
-          >
+) : (
 
-            Upload your first paper
+  <div className="mt-6 space-y-4">
 
-          </button>
+    {dashboard.recent_activity.map((activity) => (
 
-        </div>
+      <div
+        key={activity.id}
+        className="
+          rounded-2xl
+          border
+          border-[var(--border-color)]
+          bg-[var(--card-bg)]
+          p-5
+        "
+      >
+
+        <h3 className="font-semibold text-[var(--primary-text)]">
+
+          {activity.analysis_type}
+
+        </h3>
+
+        <p className="mt-1 text-sm text-[var(--secondary-text)]">
+
+          Domain: {activity.domain}
+
+        </p>
+
+        <p className="mt-1 text-xs text-[var(--muted-text)]">
+
+          {activity.created_at}
+
+        </p>
+
+      </div>
+
+    ))}
+
+  </div>
+
+)}
+
+        
 
       </section>
 

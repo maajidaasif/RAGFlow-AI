@@ -2,6 +2,7 @@ import re
 
 from llm.local_llm import ask_llm
 from services.retriever import Retriever
+from literature.domain_detector import DomainDetector
 
 
 class PaperComparisonEngine:
@@ -9,6 +10,7 @@ class PaperComparisonEngine:
     def __init__(self):
 
         self.retriever = Retriever()
+        self.domain_detector = DomainDetector()
 
     def get_paper_names(self):
 
@@ -19,17 +21,11 @@ class PaperComparisonEngine:
             paper_name = item["paper_name"]
 
             if paper_name not in paper_names:
-
-                paper_names.append(
-                    paper_name
-                )
+                paper_names.append(paper_name)
 
         return paper_names
 
-    def clean_text(
-        self,
-        text
-    ):
+    def clean_text(self, text):
 
         if text is None:
             return ""
@@ -44,10 +40,7 @@ class PaperComparisonEngine:
 
         return text.strip()
 
-    def extract_metrics(
-        self,
-        context
-    ):
+    def extract_metrics(self, context):
 
         if context is None:
             return None
@@ -55,17 +48,11 @@ class PaperComparisonEngine:
         patterns = [
 
             r"BLEU\s*(?:score)?\s*(?:of)?\s*[:=]?\s*(\d+\.\d+)",
-
             r"Accuracy\s*[:=]?\s*(\d+\.?\d*%)",
-
             r"Accuracy\s*[:=]?\s*(\d+\.\d+)",
-
             r"F1\s*(?:score)?\s*[:=]?\s*(\d+\.\d+)",
-
             r"ROUGE[- ]?[L12]?\s*[:=]?\s*(\d+\.\d+)",
-
             r"Precision\s*[:=]?\s*(\d+\.\d+)",
-
             r"Recall\s*[:=]?\s*(\d+\.\d+)"
 
         ]
@@ -83,14 +70,13 @@ class PaperComparisonEngine:
             for match in matches:
 
                 if match not in results:
-
                     results.append(match)
 
         if len(results) == 0:
             return None
 
         return "\n".join(results)
-    
+
     def get_best_context(
         self,
         paper_name,
@@ -106,14 +92,36 @@ class PaperComparisonEngine:
         if context is None:
             return None
 
-        context = self.clean_text(
-            context
-        )
+        context = self.clean_text(context)
 
         if context == "":
             return None
 
         return context
+
+    def get_all_paper_summaries(self):
+
+        paper_names = self.get_paper_names()
+
+        summaries = []
+
+        query = (
+            "Summarize this research paper including "
+            "objective, methodology, dataset, model, "
+            "contributions, limitations and future work."
+        )
+
+        for paper_name in paper_names:
+
+            context = self.get_best_context(
+                paper_name=paper_name,
+                query=query
+            )
+
+            if context:
+                summaries.append(context)
+
+        return summaries
 
     def get_prompt(
         self,
@@ -124,83 +132,83 @@ class PaperComparisonEngine:
 
             "Methodology Comparison":
             """
-Extract ONLY the methodology used in this research paper.
+        Extract ONLY the methodology used in this research paper.
 
-Return:
-- Model
-- Architecture
-- Approach
+        Return:
+        - Model
+        - Architecture
+        - Approach
 
-Maximum 2 sentences.
-""",
+        Maximum 2 sentences.
+        """,
 
             "Accuracy Comparison":
             """
-Extract ONLY the evaluation results mentioned in the context.
+        Extract ONLY the evaluation results mentioned in the context.
 
-Rules:
-- Copy ONLY numerical values from the context.
-- Include BLEU, Accuracy, F1, Precision, Recall, ROUGE and Benchmark scores if available.
-- Do NOT explain.
-- Do NOT summarize.
-- Do NOT infer.
-- If multiple values exist, list all of them.
+        Rules:
+        - Copy ONLY numerical values from the context.
+        - Include BLEU, Accuracy, F1, Precision, Recall, ROUGE and Benchmark scores if available.
+        - Do NOT explain.
+        - Do NOT summarize.
+        - Do NOT infer.
+        - If multiple values exist, list all of them.
 
-Example:
+        Example:
 
-BLEU:
-28.4
-41.0
+        BLEU:
+        28.4
+        41.0
 
-Accuracy:
-92.5%
+        Accuracy:
+        92.5%
 
-If no numerical result exists, reply:
-I could not find the answer in the uploaded research papers.
-""",
+        If no numerical result exists, reply:
+        I could not find the answer in the uploaded research papers.
+        """,
 
             "Dataset Comparison":
             """
-Extract ONLY the datasets used.
+        Extract ONLY the datasets used.
 
-Return:
-- Dataset names
-- Corpus names
-- Training data
+        Return:
+        - Dataset names
+        - Corpus names
+        - Training data
 
-Do not explain.
-""",
+        Do not explain.
+        """,
 
             "Advantages":
             """
-Extract ONLY the advantages or strengths
-of the proposed method.
+        Extract ONLY the advantages or strengths
+        of the proposed method.
 
-Maximum 2 sentences.
-""",
+        Maximum 2 sentences.
+        """,
 
             "Limitations":
             """
-Extract ONLY the limitations,
-weaknesses or challenges.
+        Extract ONLY the limitations,
+        weaknesses or challenges.
 
-Maximum 2 sentences.
-""",
+        Maximum 2 sentences.
+        """,
 
             "Future Work Comparison":
             """
-Extract ONLY the future work
-mentioned by the authors.
+        Extract ONLY the future work
+        mentioned by the authors.
 
-Maximum 2 sentences.
-"""
-
+        Maximum 2 sentences.
+        """
         }
 
         return prompts.get(
             category,
             "Summarize the context."
         )
+
     def summarize_context(
         self,
         context,
@@ -245,7 +253,6 @@ Maximum 2 sentences.
             )
 
         return answer
-
 
     def compare_category(
         self,
@@ -293,7 +300,7 @@ Maximum 2 sentences.
             f"{category_name}\n\n"
             + "\n\n".join(results)
         )
-    
+
     def compare_papers(self):
 
         categories = [
@@ -330,6 +337,24 @@ Maximum 2 sentences.
 
         ]
 
+        # ---------------------------------------
+        # Detect Research Domain
+        # ---------------------------------------
+
+        paper_summaries = self.get_all_paper_summaries()
+
+        domain = self.domain_detector.detect_domain(
+            paper_summaries
+        )
+
+        print("\n===================================")
+        print("DETECTED DOMAIN:", domain)
+        print("===================================\n")
+
+        # ---------------------------------------
+        # Generate Comparison
+        # ---------------------------------------
+
         comparison_results = []
 
         for category_name, query in categories:
@@ -354,6 +379,8 @@ Maximum 2 sentences.
         return {
 
             "success": True,
+
+            "domain": domain,
 
             "comparison": final_report
 

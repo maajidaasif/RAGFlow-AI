@@ -6,9 +6,11 @@ from config import Config
 from database import db
 from models.user_model import User
 from models.paper_model import Paper
+from models.analysis_model import Analysis
 
 from routes.auth_routes import auth
 from routes.paper_routes import paper
+from routes.literature_routes import literature
 
 
 app = Flask(__name__)
@@ -22,6 +24,7 @@ db.init_app(app)
 
 app.register_blueprint(auth)
 app.register_blueprint(paper)
+app.register_blueprint(literature)
 
 
 @app.route("/")

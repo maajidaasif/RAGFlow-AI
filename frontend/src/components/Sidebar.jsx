@@ -3,6 +3,8 @@ import {
   Upload,
   FolderOpen,
   History,
+  SearchCheck,
+  BookOpen,
   Settings,
   CircleHelp,
   BrainCircuit,
@@ -182,10 +184,30 @@ function Sidebar() {
         </NavLink>
 
         <NavLink
+  to="/research-gap"
+  className={menuClass}
+>
+
+  <SearchCheck size={19} />
+
+  Research Gap
+
+</NavLink>
+
+        <NavLink
           to="/history"
           className={menuClass}
         >
+<NavLink
+  to="/literature-survey"
+  className={menuClass}
+>
 
+  <BookOpen size={19} />
+
+  Literature Survey
+
+</NavLink>
           <History size={19} />
 
           Analysis History

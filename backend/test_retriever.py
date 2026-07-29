@@ -1,40 +1,22 @@
-from services.retriever import Retriever
+import os
 
+print("Current Working Directory:")
+print(os.getcwd())
+
+
+from services.retriever import Retriever
 
 retriever = Retriever()
 
+paper_names = []
 
-question = (
-    "What accuracy, performance score, evaluation result, "
-    "or benchmark result is reported in this research paper?"
-)
+for item in retriever.metadata:
 
+    if item["paper_name"] not in paper_names:
 
-results = retriever.retrieve_by_paper(
-    question=question,
-    paper_name="paper 1.pdf",
-    top_k=3
-)
+        paper_names.append(item["paper_name"])
 
+print("\nPaper Names in metadata:\n")
 
-print("\nQuestion:")
-print(question)
-
-print("\nSelected Paper:")
-print("paper 1.pdf")
-
-print("\nRetrieved Chunks:\n")
-
-
-for i, item in enumerate(results, start=1):
-
-    print(f"Chunk {i}")
-    print("-" * 50)
-
-    print("Paper Name:")
-    print(item["paper_name"])
-
-    print("\nContent:")
-    print(item["chunk"])
-
-    print()
+for paper in paper_names:
+    print(paper)

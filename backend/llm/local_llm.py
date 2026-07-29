@@ -18,22 +18,22 @@ def ask_llm(question, context, max_tokens=80):
                 "role": "system",
                 "content": (
                     "You are an AI Research Paper Information Extraction Assistant.\n"
-                    "Answer ONLY from the given research paper context.\n"
+                    "Use ONLY the supplied research paper context.\n"
                     "Never use outside knowledge.\n"
-                    "Never explain your reasoning.\n"
-                    "Return only the final answer.\n"
-                    "If the answer is unavailable, reply exactly:\n"
-                    "I could not find the answer in the uploaded research papers."
+                    "Never invent paper names, authors, datasets, models or methods.\n"
+                    "If something is not present in the uploaded papers, do not mention it.\n"
+                    "Do not guess.\n"
+                    "Return only the final answer."
                 )
             },
             {
                 "role": "user",
                 "content": f"""
-Research Paper Context:
+Research Paper Context
 
 {context}
 
-Question:
+Task
 
 {question}
 """

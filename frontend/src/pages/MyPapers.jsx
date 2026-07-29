@@ -1,13 +1,16 @@
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 
 import {
   FolderOpen,
   Upload,
   Trash2,
   FileText,
+  Search,
+  Files,
+  Calendar,
+  Copy,
+  Download,
+  BrainCircuit,
 } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
@@ -15,331 +18,767 @@ import { useNavigate } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 
 function MyPapers() {
+
   const navigate = useNavigate();
 
-  const [papers, setPapers] =
-    useState([]);
+  // ==========================================
+  // States
+  // ==========================================
 
+  const [papers, setPapers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const [comparisonResult, setComparisonResult] = useState("");
+  const [comparisonDomain, setComparisonDomain] = useState("");
+
+  const [loadingComparison, setLoadingComparison] =
+    useState(false);
+
+  const [savingAnalysis, setSavingAnalysis] =
+    useState(false);
+
+  const [downloadingReport, setDownloadingReport] =
+    useState(false);
+
+  // ==========================================
   // Load Papers
+  // ==========================================
+
   const loadPapers = async () => {
+
     try {
+
       const response = await fetch(
         "http://127.0.0.1:5000/papers"
       );
 
-      const data =
-        await response.json();
+      const data = await response.json();
 
-      setPapers(
-        Array.isArray(data)
-          ? data
-          : []
-      );
-    } catch (error) {
-      console.log(
-        "Load Papers Error:",
-        error
-      );
+      setPapers(Array.isArray(data) ? data : []);
+
+    }
+
+    catch (error) {
+
+      console.log(error);
 
       setPapers([]);
+
     }
+
   };
 
+  // ==========================================
   // Delete Paper
+  // ==========================================
+
   const deletePaper = async (id) => {
-    const confirmDelete =
-      window.confirm(
-        "Are you sure you want to delete this paper?"
-      );
+
+    const confirmDelete = window.confirm(
+      "Delete this paper?"
+    );
 
     if (!confirmDelete) return;
 
     try {
+
       const response = await fetch(
+
         `http://127.0.0.1:5000/paper/${id}`,
+
         {
           method: "DELETE",
         }
+
       );
 
-      const data =
-        await response.json();
+      const data = await response.json();
 
-      alert(
-        data.message ||
-          "Paper deleted."
-      );
+      alert(data.message);
 
       loadPapers();
-    } catch (error) {
-      console.log(
-        "Delete Paper Error:",
-        error
-      );
 
-      alert(
-        "Unable to delete paper."
-      );
     }
+
+    catch (error) {
+
+      console.log(error);
+
+      alert("Unable to delete paper.");
+
+    }
+
   };
 
+  // ==========================================
+  // Compare Papers
+  // ==========================================
+
+  const comparePapers = async () => {
+
+    try {
+
+      setLoadingComparison(true);
+
+      const response = await fetch(
+        "http://127.0.0.1:5000/compare-papers"
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+
+        setComparisonDomain(data.domain || "");
+
+        setComparisonResult(
+          data.comparison || ""
+        );
+
+      }
+
+      else {
+
+        alert(data.message);
+
+      }
+
+    }
+
+    catch (error) {
+
+      console.log(error);
+
+      alert("Comparison failed.");
+
+    }
+
+    finally {
+
+      setLoadingComparison(false);
+
+    }
+
+  };
+
+  // ==========================================
+  // Copy Result
+  // ==========================================
+
+  const copyResult = () => {
+
+    navigator.clipboard.writeText(
+      comparisonResult
+    );
+
+    alert("Copied successfully.");
+
+  };
+
+  // ==========================================
+  // Save Analysis
+  // ==========================================
+
+  const saveAnalysis = async () => {
+
+    try {
+
+      setSavingAnalysis(true);
+
+      alert(
+        "Backend integration coming next."
+      );
+
+    }
+
+    finally {
+
+      setSavingAnalysis(false);
+
+    }
+
+  };
+
+  // ==========================================
+  // Download Report
+  // ==========================================
+
+  const downloadReport = async () => {
+
+    try {
+
+      setDownloadingReport(true);
+
+      alert(
+        "Backend integration coming next."
+      );
+
+    }
+
+    finally {
+
+      setDownloadingReport(false);
+
+    }
+
+  };
+
+  // ==========================================
+  // Initial Load
+  // ==========================================
+
   useEffect(() => {
+
     loadPapers();
+
   }, []);
 
+  // ==========================================
+  // Search Filter
+  // ==========================================
+
+  const filteredPapers = papers.filter((paper) =>
+
+    paper.filename
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+
+  );
+
   return (
-    <MainLayout>
 
-      {/* Header */}
+  <MainLayout>
+    {/* ==========================================
+    Header
+========================================== */}
 
-      <div className="flex items-center justify-between mb-8">
+<div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
 
-        <div>
+  <div>
 
-          <h1 className="text-4xl font-bold text-[var(--primary-text)]">
+    <h1 className="text-4xl font-bold text-[var(--primary-text)]">
+      My Papers
+    </h1>
 
-            My Papers
+    <p className="mt-3 text-[var(--secondary-text)]">
+      Manage your uploaded research papers and compare them using ResearchMind AI.
+    </p>
 
-          </h1>
+  </div>
 
-          <p className="text-[var(--secondary-text)] mt-3">
+  <div className="flex flex-wrap gap-3">
 
-            View and manage your uploaded research papers.
+    <button
+      onClick={() => navigate("/upload")}
+      className="
+        flex
+        items-center
+        gap-2
+        rounded-xl
+        bg-[var(--button-bg)]
+        text-[var(--button-text)]
+        px-6
+        py-3
+        font-semibold
+        transition
+        hover:opacity-90
+      "
+    >
 
-          </p>
+      <Upload size={18} />
 
-        </div>
+      Upload Paper
 
-        {papers.length > 0 && (
+    </button>
 
-          <button
-            onClick={() =>
-              navigate("/upload")
-            }
-            className="
-              flex
-              items-center
-              gap-2
-              rounded-xl
-              bg-[var(--button-bg)]
-              text-[var(--button-text)]
-              border
-              border-[var(--border-color)]
-              px-6
-              py-3
-              font-semibold
-              transition
-              hover:opacity-80
-            "
-          >
+    <button
+      onClick={comparePapers}
+      disabled={loadingComparison}
+      className="
+        flex
+        items-center
+        gap-2
+        rounded-xl
+        bg-blue-600
+        text-white
+        px-6
+        py-3
+        font-semibold
+        transition
+        hover:bg-blue-700
+        disabled:opacity-60
+      "
+    >
 
-            <Upload size={19} />
+      <BrainCircuit size={18} />
 
-            Upload Paper
+      {loadingComparison
+        ? "Comparing..."
+        : "Compare Papers"}
 
-          </button>
+    </button>
 
-        )}
+  </div>
+
+</div>
+
+{/* ==========================================
+    Statistics
+========================================== */}
+
+<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+  <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--card-bg)] p-6">
+
+    <Files
+      size={32}
+      className="text-[var(--primary-text)]"
+    />
+
+    <h2 className="mt-4 text-3xl font-bold text-[var(--primary-text)]">
+      {papers.length}
+    </h2>
+
+    <p className="text-[var(--secondary-text)]">
+      Total Papers
+    </p>
+
+  </div>
+
+  <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--card-bg)] p-6">
+
+    <Calendar
+      size={32}
+      className="text-[var(--primary-text)]"
+    />
+
+    <h2 className="mt-4 text-3xl font-bold text-[var(--primary-text)]">
+      {papers.length > 0 ? "Available" : "None"}
+    </h2>
+
+    <p className="text-[var(--secondary-text)]">
+      Research Collection
+    </p>
+
+  </div>
+
+  <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--card-bg)] p-6">
+
+    <div className="flex items-center gap-3">
+
+      <Search
+        size={22}
+        className="text-[var(--secondary-text)]"
+      />
+
+      <input
+        type="text"
+        placeholder="Search papers..."
+        value={searchTerm}
+        onChange={(e) =>
+          setSearchTerm(e.target.value)
+        }
+        className="
+          w-full
+          bg-transparent
+          outline-none
+          text-[var(--primary-text)]
+          placeholder:text-[var(--secondary-text)]
+        "
+      />
+
+    </div>
+
+  </div>
+
+</div>
+
+{/* ==========================================
+    Empty State
+========================================== */}
+
+{papers.length === 0 && (
+
+  <div
+    className="
+      rounded-3xl
+      border
+      border-[var(--border-color)]
+      bg-[var(--card-bg)]
+      p-14
+      text-center
+    "
+  >
+
+    <div className="flex justify-center">
+
+      <div
+        className="
+          h-24
+          w-24
+          rounded-full
+          bg-[var(--card-hover)]
+          flex
+          items-center
+          justify-center
+        "
+      >
+
+        <FolderOpen
+          size={50}
+          className="text-[var(--primary-text)]"
+        />
 
       </div>
 
-      {papers.length === 0 ? (
+    </div>
 
-        /* Empty State */
+    <h2 className="mt-6 text-3xl font-bold text-[var(--primary-text)]">
 
-        <div
-          className="
-            bg-[var(--card-bg)]
-            rounded-3xl
-            border
-            border-[var(--border-color)]
-            p-14
-            text-center
-            transition-colors
-            duration-300
-          "
-        >
+      No Research Papers Found
 
-          <div className="flex justify-center">
+    </h2>
 
-            <div
-              className="
-                w-24
-                h-24
-                rounded-full
-                bg-[var(--card-hover)]
-                flex
-                items-center
-                justify-center
-              "
-            >
+    <p className="mt-3 text-[var(--secondary-text)]">
 
-              <FolderOpen
-                size={50}
-                className="text-[var(--primary-text)]"
-              />
+      Upload your first research paper to start AI analysis.
 
-            </div>
+    </p>
 
-          </div>
+    <button
+      onClick={() => navigate("/upload")}
+      className="
+        mt-8
+        inline-flex
+        items-center
+        gap-3
+        rounded-xl
+        bg-[var(--button-bg)]
+        text-[var(--button-text)]
+        px-8
+        py-3
+        font-semibold
+        hover:opacity-90
+      "
+    >
 
-          <h2 className="text-3xl font-bold text-[var(--primary-text)] mt-6">
+      <Upload size={20} />
 
-            No Research Papers Found
+      Upload First Paper
 
-          </h2>
+    </button>
 
-          <p className="text-[var(--secondary-text)] mt-4">
+  </div>
 
-            Upload your first research paper.
+)}
+{/* ==========================================
+    Paper Cards
+========================================== */}
 
-          </p>
+{papers.length > 0 && (
 
-          <button
-            onClick={() =>
-              navigate("/upload")
-            }
+  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+    {filteredPapers.map((paper) => (
+
+      <div
+        key={paper.id}
+        className="
+          rounded-2xl
+          border
+          border-[var(--border-color)]
+          bg-[var(--card-bg)]
+          p-6
+          transition-all
+          duration-300
+          hover:-translate-y-1
+          hover:shadow-xl
+          hover:bg-[var(--card-hover)]
+        "
+      >
+
+        {/* Top */}
+
+        <div className="flex items-center justify-between">
+
+          <div
             className="
-              mt-8
-              bg-[var(--button-bg)]
-              text-[var(--button-text)]
-              border
-              border-[var(--border-color)]
-              px-8
-              py-3
+              h-14
+              w-14
               rounded-xl
-              font-semibold
+              bg-[var(--card-hover)]
               flex
               items-center
-              gap-3
-              mx-auto
-              transition
-              hover:opacity-80
+              justify-center
             "
           >
 
-            <Upload size={20} />
+            <FileText
+              size={30}
+              className="text-[var(--primary-text)]"
+            />
 
-            Upload First Paper
+          </div>
+
+          <span
+            className="
+              rounded-full
+              bg-blue-600/20
+              text-blue-400
+              px-3
+              py-1
+              text-xs
+              font-semibold
+            "
+          >
+
+            PDF
+
+          </span>
+
+        </div>
+
+        {/* File Name */}
+
+        <h2
+          className="
+            mt-5
+            text-lg
+            font-semibold
+            text-[var(--primary-text)]
+            break-words
+          "
+        >
+
+          {paper.filename}
+
+        </h2>
+
+        {/* Upload Date */}
+
+        <p
+          className="
+            mt-2
+            text-sm
+            text-[var(--secondary-text)]
+          "
+        >
+
+          Uploaded : {paper.uploaded_at}
+
+        </p>
+
+        {/* Buttons */}
+
+        <div className="mt-6 flex gap-3">
+
+          <a
+            href={`http://127.0.0.1:5000/uploads/${encodeURIComponent(
+              paper.filename
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="
+              flex-1
+              rounded-lg
+              bg-[var(--button-bg)]
+              text-[var(--button-text)]
+              text-center
+              py-2.5
+              font-medium
+              transition
+              hover:opacity-90
+            "
+          >
+
+            View PDF
+
+          </a>
+
+          <button
+            onClick={() => deletePaper(paper.id)}
+            className="
+              rounded-lg
+              border
+              border-red-500
+              px-4
+              text-red-500
+              transition
+              hover:bg-red-600
+              hover:text-white
+            "
+          >
+
+            <Trash2 size={18} />
 
           </button>
 
         </div>
 
-      ) : (
+      </div>
 
-        /* Paper List */
+    ))}
 
-        <div className="space-y-5">
+  </div>
 
-          {papers.map((paper) => (
+)}
 
-            <div
-              key={paper.id}
-              className="
-                bg-[var(--card-bg)]
-                border
-                border-[var(--border-color)]
-                rounded-2xl
-                p-6
-                flex
-                justify-between
-                items-center
-                transition
-                hover:bg-[var(--card-hover)]
-              "
-            >
+{/* ==========================================
+    AI Comparison Report
+========================================== */}
 
-              <div className="flex items-start gap-4">
+{comparisonResult && (
 
-                <div
-                  className="
-                    w-11
-                    h-11
-                    rounded-xl
-                    bg-[var(--card-hover)]
-                    flex
-                    items-center
-                    justify-center
-                    shrink-0
-                  "
-                >
+  <div
+    className="
+      mt-10
+      rounded-2xl
+      border
+      border-[var(--border-color)]
+      bg-[var(--card-bg)]
+      p-8
+    "
+  >
 
-                  <FileText
-                    size={21}
-                    className="text-[var(--primary-text)]"
-                  />
+    <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
 
-                </div>
+      <div>
 
-                <div>
+        <h2 className="text-2xl font-bold text-[var(--primary-text)]">
 
-                  <a
-                    href={`http://127.0.0.1:5000/uploads/${encodeURIComponent(
-                      paper.filename
-                    )}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="
-                      text-[var(--primary-text)]
-                      text-xl
-                      font-semibold
-                      hover:opacity-70
-                      transition
-                    "
-                  >
+          AI Comparison Report
 
-                    {paper.filename}
+        </h2>
 
-                  </a>
+        <p className="mt-2 text-[var(--secondary-text)]">
 
-                  <p className="text-[var(--secondary-text)] mt-2">
+          Generated by ResearchMind AI
 
-                    Uploaded:{" "}
-                    {paper.uploaded_at}
+        </p>
 
-                  </p>
+      </div>
 
-                </div>
+      <div className="flex flex-wrap gap-3">
 
-              </div>
+        <button
+          onClick={copyResult}
+          className="
+            flex
+            items-center
+            gap-2
+            rounded-xl
+            border
+            border-[var(--border-color)]
+            px-4
+            py-2
+            hover:bg-[var(--card-hover)]
+          "
+        >
 
-              <button
-                onClick={() =>
-                  deletePaper(paper.id)
-                }
-                className="
-                  border
-                  border-red-500
-                  px-5
-                  py-2
-                  rounded-xl
-                  text-red-500
-                  flex
-                  items-center
-                  gap-2
-                  transition
-                  hover:bg-red-600
-                  hover:text-white
-                "
-              >
+          <Copy size={18} />
 
-                <Trash2 size={18} />
+          Copy
 
-                Delete
+        </button>
 
-              </button>
+        <button
+          onClick={saveAnalysis}
+          disabled={savingAnalysis}
+          className="
+            rounded-xl
+            bg-green-600
+            px-5
+            py-2
+            font-medium
+            text-white
+            transition
+            hover:bg-green-700
+            disabled:opacity-60
+          "
+        >
 
-            </div>
+          {savingAnalysis
+            ? "Saving..."
+            : "Save Analysis"}
 
-          ))}
+        </button>
 
-        </div>
+        <button
+          onClick={downloadReport}
+          disabled={downloadingReport}
+          className="
+            flex
+            items-center
+            gap-2
+            rounded-xl
+            bg-blue-600
+            px-5
+            py-2
+            font-medium
+            text-white
+            transition
+            hover:bg-blue-700
+            disabled:opacity-60
+          "
+        >
 
-      )}
+          <Download size={18} />
+
+          {downloadingReport
+            ? "Downloading..."
+            : "Download"}
+
+        </button>
+
+      </div>
+
+    </div>
+
+    {comparisonDomain && (
+
+      <div
+        className="
+          mt-6
+          inline-flex
+          rounded-full
+          bg-blue-600/15
+          px-4
+          py-2
+          text-sm
+          font-semibold
+          text-blue-500
+        "
+      >
+
+        Research Domain : {comparisonDomain}
+
+      </div>
+
+    )}
+
+    <div
+      className="
+        mt-8
+        rounded-xl
+        bg-[var(--app-bg)]
+        p-6
+        whitespace-pre-wrap
+        leading-8
+        text-[var(--primary-text)]
+      "
+    >
+
+      {comparisonResult}
+
+    </div>
+
+  </div>
+
+)}
 
     </MainLayout>
+
   );
+
 }
 
 export default MyPapers;

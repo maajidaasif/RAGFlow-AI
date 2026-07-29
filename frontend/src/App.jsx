@@ -6,6 +6,8 @@ import Dashboard from "./pages/Dashboard";
 import UploadPage from "./pages/UploadPage";
 import MyPapers from "./pages/MyPapers";
 import History from "./pages/History";
+import ResearchGap from "./pages/ResearchGap";
+import LiteratureSurvey from "./pages/LiteratureSurvey";
 import Settings from "./pages/Settings";
 import Help from "./pages/Help";
 import Profile from "./pages/Profile";
@@ -76,6 +78,29 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* Research Gap Detection */}
+
+        <Route
+          path="/research-gap"
+          element={
+            <ProtectedRoute>
+              <ResearchGap />
+            </ProtectedRoute>
+          }
+        />
+{/* Literature Survey */}
+
+<Route
+  path="/literature-survey"
+  element={
+    <ProtectedRoute>
+      <LiteratureSurvey />
+    </ProtectedRoute>
+  }
+/>
+
+
 
         {/* Analysis History */}
 
