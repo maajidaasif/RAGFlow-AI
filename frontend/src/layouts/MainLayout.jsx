@@ -12,21 +12,16 @@ function MainLayout({ children }) {
         duration-300
       "
     >
-
       {/* Sidebar */}
-
       <Sidebar />
 
       {/* Right Side */}
-
       <div className="flex-1 flex flex-col min-w-0">
 
         {/* Navbar */}
-
         <DashboardNavbar />
 
         {/* Page Content */}
-
         <main
           className="
             flex-1
@@ -37,13 +32,10 @@ function MainLayout({ children }) {
             duration-300
           "
         >
-
           {children}
-
         </main>
 
       </div>
-
     </div>
   );
 }

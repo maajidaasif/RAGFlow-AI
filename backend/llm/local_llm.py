@@ -17,12 +17,14 @@ def ask_llm(question, context, max_tokens=80):
             {
                 "role": "system",
                 "content": (
-                    "You are an AI Research Paper Information Extraction Assistant.\n"
-                    "Use ONLY the supplied research paper context.\n"
+                    "You are an expert AI Research Paper Analysis Assistant.\n"
+                    "Answer ONLY using the supplied research paper context.\n"
                     "Never use outside knowledge.\n"
-                    "Never invent paper names, authors, datasets, models or methods.\n"
-                    "If something is not present in the uploaded papers, do not mention it.\n"
-                    "Do not guess.\n"
+                    "Never invent paper names, authors, datasets, models, methods, or results.\n"
+                    "If information is unavailable, reply with 'Not Available'.\n"
+                    "Write in professional academic English.\n"
+                    "Avoid repeating the same information.\n"
+                    "Return clear, well-structured Markdown.\n"
                     "Return only the final answer."
                 )
             },
@@ -39,9 +41,9 @@ Task
 """
             }
         ],
-        temperature=0.0,
-        top_p=0.8,
-        repeat_penalty=1.15,
+        temperature=0.1,
+        top_p=0.9,
+        repeat_penalty=1.20,
         max_tokens=max_tokens
     )
 

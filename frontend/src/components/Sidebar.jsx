@@ -133,86 +133,77 @@ function Sidebar() {
       {/* Navigation */}
 
       <nav className="flex-1 px-4 py-6 space-y-1">
+{/* Workspace Label */}
 
-        {/* Workspace Label */}
+<p
+  className="
+    px-4
+    mb-3
+    text-xs
+    font-medium
+    uppercase
+    tracking-wider
+    text-[var(--muted-text)]
+  "
+>
+  Workspace
+</p>
 
-        <p
-          className="
-            px-4
-            mb-3
-            text-xs
-            font-medium
-            uppercase
-            tracking-wider
-            text-[var(--muted-text)]
-          "
-        >
-          Workspace
-        </p>
+<NavLink
+  to="/dashboard"
+  className={menuClass}
+>
+  <LayoutDashboard size={19} />
+  Dashboard
+</NavLink>
 
-        <NavLink
-          to="/dashboard"
-          className={menuClass}
-        >
+<NavLink
+  to="/upload"
+  className={menuClass}
+>
+  <Upload size={19} />
+  Upload Papers
+</NavLink>
 
-          <LayoutDashboard size={19} />
+<NavLink
+  to="/papers"
+  className={menuClass}
+>
+  <FolderOpen size={19} />
+  My Papers
+</NavLink>
 
-          Dashboard
-
-        </NavLink>
-
-        <NavLink
-          to="/upload"
-          className={menuClass}
-        >
-
-          <Upload size={19} />
-
-          Upload Papers
-
-        </NavLink>
-
-        <NavLink
-          to="/papers"
-          className={menuClass}
-        >
-
-          <FolderOpen size={19} />
-
-          My Papers
-
-        </NavLink>
-
-        <NavLink
+<NavLink
   to="/research-gap"
   className={menuClass}
 >
-
   <SearchCheck size={19} />
-
   Research Gap
-
 </NavLink>
 
-        <NavLink
-          to="/history"
-          className={menuClass}
-        >
 <NavLink
   to="/literature-survey"
   className={menuClass}
 >
-
   <BookOpen size={19} />
-
   Literature Survey
-
 </NavLink>
-          <History size={19} />
 
-          Analysis History
+<NavLink
+  to="/report"
+  className={menuClass}
+>
+  <BookOpen size={19} />
+  Research Report
+</NavLink>
 
-        </NavLink>
+<NavLink
+  to="/history"
+  className={menuClass}
+>
+  <History size={19} />
+  Analysis History
+</NavLink>
 
         {/* Divider */}
 

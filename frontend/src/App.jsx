@@ -8,6 +8,7 @@ import MyPapers from "./pages/MyPapers";
 import History from "./pages/History";
 import ResearchGap from "./pages/ResearchGap";
 import LiteratureSurvey from "./pages/LiteratureSurvey";
+import Report from "./pages/Report";
 import Settings from "./pages/Settings";
 import Help from "./pages/Help";
 import Profile from "./pages/Profile";
@@ -79,7 +80,7 @@ function App() {
           }
         />
 
-        {/* Research Gap Detection */}
+        {/* Research Gap */}
 
         <Route
           path="/research-gap"
@@ -89,18 +90,28 @@ function App() {
             </ProtectedRoute>
           }
         />
-{/* Literature Survey */}
 
-<Route
-  path="/literature-survey"
-  element={
-    <ProtectedRoute>
-      <LiteratureSurvey />
-    </ProtectedRoute>
-  }
-/>
+        {/* Literature Survey */}
 
+        <Route
+          path="/literature-survey"
+          element={
+            <ProtectedRoute>
+              <LiteratureSurvey />
+            </ProtectedRoute>
+          }
+        />
 
+        {/* Research Report */}
+
+        <Route
+          path="/report"
+          element={
+            <ProtectedRoute>
+              <Report />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Analysis History */}
 
