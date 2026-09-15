@@ -1,6 +1,6 @@
-# 📚 ResearchMind-AI
+# 📚 RAGFlow AI
 
-ResearchMind-AI is an AI-powered research paper analysis platform that enables users to upload research papers, generate summaries, compare multiple papers, retrieve relevant information using Retrieval-Augmented Generation (RAG), and interact with a Local Large Language Model (LLM) for intelligent research assistance.
+ RAGFlow AI is an AI-powered research paper analysis platform that enables users to upload research papers, generate summaries, compare multiple papers, retrieve relevant information using Retrieval-Augmented Generation (RAG), and interact with a Local Large Language Model (LLM) for intelligent research assistance.
 
 The platform is designed to simplify the process of understanding research papers by providing AI-driven insights, comparisons, and question-answering capabilities.
 
