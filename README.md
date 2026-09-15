@@ -46,7 +46,7 @@ The platform is designed to simplify the process of understanding research paper
 # 📂 Project Structure
 
 ```text
-ResearchMind-AI
+RAGFlow AI 
 │
 ├── backend
 │   ├── comparison
