@@ -5,18 +5,34 @@ from chunking import split_text
 from services.pdf_processing import process_pdf
 from services.vector_database import VectorDatabase
 
-# Load embedding model
-embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+# Embedding model will be loaded only when required
+embedding_model = None
+
+
+def initialize_embedding_model():
+    global embedding_model
+
+    if embedding_model is None:
+        print("\nLoading embedding model...")
+        embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+    return embedding_model
 
 
 def generate_embeddings(chunks, batch_size=32):
+
+    model = initialize_embedding_model()
+
     print("\nGenerating embeddings...")
-    embeddings = embedding_model.encode(
+
+    embeddings = model.encode(
         chunks,
         batch_size=batch_size,
         show_progress_bar=True,
         convert_to_numpy=True
     )
+
     return embeddings
 
 

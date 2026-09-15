@@ -12,6 +12,7 @@ import {
   Search,
   ArrowRight,
   Plus,
+  MemoryStick,
 } from "lucide-react";
 
 import MainLayout from "../layouts/MainLayout";
@@ -50,6 +51,28 @@ function Dashboard() {
 
   const [loading, setLoading] = useState(true);
 
+  const [ramStatus, setRamStatus] = useState({
+  available_ram: 0,
+  ram_status: "GREEN",
+});
+
+const loadRamStatus = async () => {
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:5000/system-status"
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to load RAM status");
+    }
+
+    const data = await response.json();
+
+    setRamStatus(data);
+  } catch (error) {
+    console.error("RAM Status Error:", error);
+  }
+};
   const loadDashboard = async () => {
     try {
       const response = await fetch(
@@ -71,8 +94,9 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    loadDashboard();
-  }, []);
+  loadDashboard();
+  loadRamStatus();
+}, []);
 
   if (loading) {
     return (
@@ -204,6 +228,72 @@ function Dashboard() {
         </div>
 
       </section>
+      {/* System Resource Status */}
+
+<section className="mt-8">
+  <div
+    className="
+      rounded-2xl
+      border
+      border-[var(--border-color)]
+      bg-[var(--card-bg)]
+      p-6
+    "
+  >
+    <div className="flex items-center justify-between gap-4">
+      
+      <div className="flex items-center gap-4">
+        
+        <div
+          className="
+            flex
+            h-12
+            w-12
+            items-center
+            justify-center
+            rounded-xl
+            bg-[var(--card-hover)]
+          "
+        >
+          <MemoryStick
+            size={24}
+            className="text-[var(--primary-text)]"
+          />
+        </div>
+
+        <div>
+          <p className="text-sm text-[var(--secondary-text)]">
+            System Resource Status
+          </p>
+
+          <h2 className="mt-1 text-xl font-semibold text-[var(--primary-text)]">
+            {ramStatus.ram_status === "GREEN"
+              ? "🟢 System Ready"
+              : "🔴 Low RAM"}
+          </h2>
+
+          <p className="mt-1 text-sm text-[var(--muted-text)]">
+            Available RAM: {ramStatus.available_ram} GB
+          </p>
+        </div>
+
+      </div>
+
+      <span className="text-sm font-semibold text-[var(--secondary-text)]">
+        {ramStatus.ram_status}
+      </span>
+
+    </div>
+
+    {ramStatus.ram_status === "RED" && (
+      <p className="mt-4 text-sm text-[var(--muted-text)]">
+        Please close unnecessary applications before
+        running heavy AI processing.
+      </p>
+    )}
+
+  </div>
+</section>
 
       {/* Statistics */}
 

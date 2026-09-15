@@ -1,18 +1,33 @@
 from llama_cpp import Llama
 
-llm = Llama(
-    model_path="models/qwen2.5-3b-instruct-q4_k_m.gguf",
-    n_ctx=4096,
-    n_threads=8,
-    n_gpu_layers=0,
-    chat_format="chatml",
-    verbose=False
-)
+
+# Local LLM will be loaded only when required
+llm = None
+
+
+def initialize_llm():
+    global llm
+
+    if llm is None:
+        print("\nLoading Qwen2.5-3B-Instruct...")
+
+        llm = Llama(
+            model_path="models/qwen2.5-3b-instruct-q4_k_m.gguf",
+            n_ctx=4096,
+            n_threads=8,
+            n_gpu_layers=0,
+            chat_format="chatml",
+            verbose=False
+        )
+
+    return llm
 
 
 def ask_llm(question, context, max_tokens=80):
 
-    response = llm.create_chat_completion(
+    model = initialize_llm()
+
+    response = model.create_chat_completion(
         messages=[
             {
                 "role": "system",

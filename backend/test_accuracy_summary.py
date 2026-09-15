@@ -1,40 +1,56 @@
 from llm.local_llm import ask_llm
-from comparison.paper_comparison import PaperComparisonEngine
+from services.paper_comparison import PaperComparisonEngine
 
 
 engine = PaperComparisonEngine()
 
+
 paper_name = "paper 1.pdf"
 
-# Get the best chunk using the new method
-chunk = engine.get_best_chunk(
-    paper_name=paper_name,
-    query=(
+evidence = engine.get_relevant_evidence(
+    retrieval_query=(
         "What accuracy, performance score, "
-        "evaluation result, BLEU score, "
-        "F1 score or benchmark result "
+        "evaluation result, or benchmark result "
         "is reported in this research paper?"
-    )
+    ),
+    paper_name=paper_name,
+    keywords=[
+        "accuracy",
+        "bleu",
+        "f1",
+        "score",
+        "results",
+        "performance",
+        "benchmark",
+        "state-of-the-art"
+    ],
+    category_name="Accuracy Comparison"
 )
 
+
 print("\n========== RETRIEVED EVIDENCE ==========\n")
-print(chunk)
+print(evidence)
 
 
 question = """
-Read the context and report only the BLEU score values.
+Extract only the reported performance result from the context.
 
-Return format:
-BLEU scores: value1, value2
-
-Do not explain anything.
+Rules:
+- Use only facts and numbers explicitly present in the context.
+- Do not add outside information.
+- Do not invent a model, dataset, score, or result.
+- Give a short answer.
+- If no performance result is present, answer exactly:
+Not available in the provided context.
 """
+
 
 answer = ask_llm(
     question=question,
-    context=chunk,
-    max_tokens=40
+    context=evidence,
+    max_tokens=80
 )
+
 
 print("\n========== LOCAL LLM ANSWER ==========\n")
 print(answer)

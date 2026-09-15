@@ -1,17 +1,11 @@
 import Sidebar from "../components/Sidebar";
 import DashboardNavbar from "../components/DashboardNavbar";
+import ResearchChatbot from "../components/ResearchChatbot";
 
 function MainLayout({ children }) {
   return (
-    <div
-      className="
-        flex
-        min-h-screen
-        bg-[var(--app-bg)]
-        transition-colors
-        duration-300
-      "
-    >
+    <div className="flex min-h-screen bg-[var(--app-bg)]">
+
       {/* Sidebar */}
       <Sidebar />
 
@@ -36,6 +30,10 @@ function MainLayout({ children }) {
         </main>
 
       </div>
+
+      {/* Research Assistant Chatbot */}
+      <ResearchChatbot />
+
     </div>
   );
 }
