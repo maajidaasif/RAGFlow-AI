@@ -12,7 +12,7 @@ from services.resource_monitor import (
 # APPLICATION INITIALIZATION & SAFETY CONTROL
 # ============================================================
 
-RAM_THRESHOLD_GB = 4
+RAM_THRESHOLD_GB = 2
 
 
 class ApplicationInitializer:

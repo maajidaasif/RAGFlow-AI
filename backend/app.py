@@ -119,6 +119,6 @@ if __name__ == "__main__":
     # --------------------------------------------------------
 
     app.run(
-        debug=True,
+        debug=False,
         use_reloader=False
-    )
+)
