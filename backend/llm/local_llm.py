@@ -23,7 +23,7 @@ def initialize_llm():
     return llm
 
 
-def ask_llm(question, context, max_tokens=80):
+def ask_llm(question, context, max_tokens=512):
 
     model = initialize_llm()
 

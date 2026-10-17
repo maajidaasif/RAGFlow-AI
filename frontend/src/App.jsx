@@ -17,7 +17,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("access_token");
 
   return (
 
@@ -30,7 +30,7 @@ function App() {
         <Route
           path="/"
           element={
-            token
+            localStorage.getItem("access_token")
               ? <Navigate to="/dashboard" replace />
               : <Login />
           }
@@ -41,7 +41,7 @@ function App() {
         <Route
           path="/register"
           element={
-            token
+            localStorage.getItem("access_token")
               ? <Navigate to="/dashboard" replace />
               : <Register />
           }

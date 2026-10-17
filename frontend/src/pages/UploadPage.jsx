@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 
 import MainLayout from "../layouts/MainLayout";
+import API from "../services/authService";
+
 
 function UploadPage() {
   const navigate = useNavigate();
@@ -24,17 +26,19 @@ function UploadPage() {
   const [error, setError] = useState("");
   const [openPicker, setOpenPicker] = useState(false);
 
+
   useEffect(() => {
     if (openPicker && fileInputRef.current) {
       fileInputRef.current.click();
-
       setOpenPicker(false);
     }
   }, [openPicker]);
 
+
   const openFilePicker = () => {
     fileInputRef.current?.click();
   };
+
 
   const uploadMore = () => {
     setUploadSuccess(false);
@@ -44,6 +48,7 @@ function UploadPage() {
 
     setOpenPicker(true);
   };
+
 
   const handleFileChange = async (event) => {
     const files = event.target.files;
@@ -63,16 +68,16 @@ function UploadPage() {
       formData.append("papers", files[i]);
     }
 
+
     try {
-      const response = await fetch(
-        "http://127.0.0.1:5000/upload-paper",
-        {
-          method: "POST",
-          body: formData,
-        }
+      // API automatically adds JWT token
+      const response = await API.post(
+        "/upload-paper",
+        formData
       );
 
-      const data = await response.json();
+      const data = response.data;
+
 
       if (data.success) {
         setUploadSuccess(true);
@@ -84,18 +89,28 @@ function UploadPage() {
         );
 
         setMessage(data.message);
+
       } else {
         setError(
           data.message ||
             "Unable to upload papers."
         );
       }
+
     } catch (err) {
       console.log("Upload Error:", err);
 
-      setError(
-        "Upload failed. Please try again."
-      );
+      if (err.response) {
+        setError(
+          err.response.data?.message ||
+            "Upload failed. Please try again."
+        );
+      } else {
+        setError(
+          "Upload failed. Please try again."
+        );
+      }
+
     } finally {
       setUploading(false);
 
@@ -104,6 +119,7 @@ function UploadPage() {
       }
     }
   };
+
 
   return (
     <MainLayout>
@@ -124,6 +140,7 @@ function UploadPage() {
           AI-powered analysis.
 
         </p>
+
 
         {!uploadSuccess ? (
 
@@ -180,6 +197,7 @@ function UploadPage() {
 
                 </div>
 
+
                 <h2 className="text-3xl font-bold text-[var(--primary-text)] mt-8">
 
                   {uploading
@@ -188,11 +206,13 @@ function UploadPage() {
 
                 </h2>
 
+
                 <p className="text-[var(--secondary-text)] mt-4">
 
                   Supported format: PDF (.pdf)
 
                 </p>
+
 
                 <button
                   onClick={openFilePicker}
@@ -225,6 +245,7 @@ function UploadPage() {
 
                 </button>
 
+
                 <input
                   type="file"
                   multiple
@@ -237,6 +258,7 @@ function UploadPage() {
               </div>
 
             </div>
+
 
             {/* Supported Files */}
 
@@ -320,17 +342,20 @@ function UploadPage() {
                   className="text-green-500"
                 />
 
+
                 <h2 className="text-3xl font-bold text-[var(--primary-text)] mt-6">
 
                   Research Papers Uploaded Successfully!
 
                 </h2>
 
+
                 <p className="text-green-500 mt-3">
 
                   {message}
 
                 </p>
+
 
                 {/* Uploaded Papers */}
 
@@ -351,6 +376,7 @@ function UploadPage() {
                     Uploaded Papers
 
                   </h3>
+
 
                   {uploadedFiles.map(
                     (paper, index) => (
@@ -386,6 +412,7 @@ function UploadPage() {
 
                         </div>
 
+
                         <CheckCircle
                           size={22}
                           className="text-green-500"
@@ -397,6 +424,7 @@ function UploadPage() {
                   )}
 
                 </div>
+
 
                 {/* Ready Status */}
 
@@ -428,6 +456,7 @@ function UploadPage() {
 
                 </div>
 
+
                 {/* Buttons */}
 
                 <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
@@ -456,6 +485,7 @@ function UploadPage() {
                     Upload More Papers
 
                   </button>
+
 
                   <button
                     onClick={() =>
@@ -492,6 +522,7 @@ function UploadPage() {
 
         )}
 
+
         {/* Error */}
 
         {error && (
@@ -520,5 +551,6 @@ function UploadPage() {
     </MainLayout>
   );
 }
+
 
 export default UploadPage;

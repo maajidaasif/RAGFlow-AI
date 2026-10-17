@@ -25,6 +25,11 @@ function Register() {
       return;
     }
 
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters long.");
+      return;
+    }
+
     try {
 
       await registerUser({
@@ -124,6 +129,7 @@ function Register() {
             <input
               type="password"
               placeholder="Password"
+              minLength={8}
               autoComplete="new-password"
               value={password}
               onChange={(e) =>
@@ -144,6 +150,7 @@ function Register() {
             <input
               type="password"
               placeholder="Confirm Password"
+              minLength={8}
               autoComplete="new-password"
               value={confirmPassword}
               onChange={(e) =>

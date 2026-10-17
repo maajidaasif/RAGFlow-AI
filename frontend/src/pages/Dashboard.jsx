@@ -5,7 +5,6 @@ import {
   Upload,
   Library,
   History,
-  Sparkles,
   FileText,
   BrainCircuit,
   FileOutput,
@@ -16,6 +15,7 @@ import {
 } from "lucide-react";
 
 import MainLayout from "../layouts/MainLayout";
+import API from "../services/authService";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -51,39 +51,37 @@ function Dashboard() {
 
   const [loading, setLoading] = useState(true);
 
+  // RAM Status
   const [ramStatus, setRamStatus] = useState({
-  available_ram: 0,
-  ram_status: "GREEN",
-});
+    available_ram: 0,
+    ram_status: "GREEN",
+  });
 
-const loadRamStatus = async () => {
-  try {
-    const response = await fetch(
-      "http://127.0.0.1:5000/system-status"
-    );
+  // ==========================================
+  // Load RAM Status
+  // ==========================================
 
-    if (!response.ok) {
-      throw new Error("Failed to load RAM status");
+  const loadRamStatus = async () => {
+    try {
+      const response = await API.get("/system-status");
+
+      const data = response.data;
+
+      setRamStatus(data);
+    } catch (error) {
+      console.error("RAM Status Error:", error);
     }
+  };
 
-    const data = await response.json();
+  // ==========================================
+  // Load Dashboard
+  // ==========================================
 
-    setRamStatus(data);
-  } catch (error) {
-    console.error("RAM Status Error:", error);
-  }
-};
   const loadDashboard = async () => {
     try {
-      const response = await fetch(
-        "http://127.0.0.1:5000/dashboard"
-      );
+      const response = await API.get("/dashboard");
 
-      if (!response.ok) {
-        throw new Error("Failed to load dashboard");
-      }
-
-      const data = await response.json();
+      const data = response.data;
 
       setDashboard(data);
     } catch (error) {
@@ -93,10 +91,18 @@ const loadRamStatus = async () => {
     }
   };
 
+  // ==========================================
+  // Initial Load
+  // ==========================================
+
   useEffect(() => {
-  loadDashboard();
-  loadRamStatus();
-}, []);
+    loadDashboard();
+    loadRamStatus();
+  }, []);
+
+  // ==========================================
+  // Loading Screen
+  // ==========================================
 
   if (loading) {
     return (
@@ -109,6 +115,10 @@ const loadRamStatus = async () => {
       </MainLayout>
     );
   }
+
+  // ==========================================
+  // UI
+  // ==========================================
 
   return (
     <MainLayout>
@@ -126,7 +136,6 @@ const loadRamStatus = async () => {
           duration-300
         "
       >
-
         <div className="max-w-4xl">
 
           <p
@@ -172,9 +181,7 @@ const loadRamStatus = async () => {
           <div className="mt-8 flex flex-wrap gap-4">
 
             <button
-              onClick={() =>
-                navigate("/upload")
-              }
+              onClick={() => navigate("/upload")}
               className="
                 flex
                 items-center
@@ -189,17 +196,13 @@ const loadRamStatus = async () => {
                 hover:opacity-80
               "
             >
-
               <Plus size={19} />
 
               New Research
-
             </button>
 
             <button
-              onClick={() =>
-                navigate("/papers")
-              }
+              onClick={() => navigate("/papers")}
               className="
                 flex
                 items-center
@@ -216,278 +219,257 @@ const loadRamStatus = async () => {
                 hover:bg-[var(--card-hover)]
               "
             >
-
               <Library size={19} />
 
               My Papers
-
             </button>
 
           </div>
 
         </div>
-
       </section>
+
       {/* System Resource Status */}
 
-<section className="mt-8">
-  <div
-    className="
-      rounded-2xl
-      border
-      border-[var(--border-color)]
-      bg-[var(--card-bg)]
-      p-6
-    "
-  >
-    <div className="flex items-center justify-between gap-4">
-      
-      <div className="flex items-center gap-4">
-        
+      <section className="mt-8">
+
         <div
           className="
-            flex
-            h-12
-            w-12
-            items-center
-            justify-center
-            rounded-xl
-            bg-[var(--card-hover)]
+            rounded-2xl
+            border
+            border-[var(--border-color)]
+            bg-[var(--card-bg)]
+            p-6
           "
         >
-          <MemoryStick
-            size={24}
-            className="text-[var(--primary-text)]"
-          />
+
+          <div className="flex items-center justify-between gap-4">
+
+            <div className="flex items-center gap-4">
+
+              <div
+                className="
+                  flex
+                  h-12
+                  w-12
+                  items-center
+                  justify-center
+                  rounded-xl
+                  bg-[var(--card-hover)]
+                "
+              >
+                <MemoryStick
+                  size={24}
+                  className="text-[var(--primary-text)]"
+                />
+              </div>
+
+              <div>
+
+                <p className="text-sm text-[var(--secondary-text)]">
+                  System Resource Status
+                </p>
+
+                <h2 className="mt-1 text-xl font-semibold text-[var(--primary-text)]">
+                  {ramStatus.ram_status === "GREEN"
+                    ? "🟢 System Ready"
+                    : "🔴 Low RAM"}
+                </h2>
+
+                <p className="mt-1 text-sm text-[var(--muted-text)]">
+                  Available RAM: {ramStatus.available_ram} GB
+                </p>
+
+              </div>
+
+            </div>
+
+            <span className="text-sm font-semibold text-[var(--secondary-text)]">
+              {ramStatus.ram_status}
+            </span>
+
+          </div>
+
+          {ramStatus.ram_status === "RED" && (
+            <p className="mt-4 text-sm text-[var(--muted-text)]">
+              Please close unnecessary applications before
+              running heavy AI processing.
+            </p>
+          )}
+
         </div>
 
-        <div>
-          <p className="text-sm text-[var(--secondary-text)]">
-            System Resource Status
-          </p>
-
-          <h2 className="mt-1 text-xl font-semibold text-[var(--primary-text)]">
-            {ramStatus.ram_status === "GREEN"
-              ? "🟢 System Ready"
-              : "🔴 Low RAM"}
-          </h2>
-
-          <p className="mt-1 text-sm text-[var(--muted-text)]">
-            Available RAM: {ramStatus.available_ram} GB
-          </p>
-        </div>
-
-      </div>
-
-      <span className="text-sm font-semibold text-[var(--secondary-text)]">
-        {ramStatus.ram_status}
-      </span>
-
-    </div>
-
-    {ramStatus.ram_status === "RED" && (
-      <p className="mt-4 text-sm text-[var(--muted-text)]">
-        Please close unnecessary applications before
-        running heavy AI processing.
-      </p>
-    )}
-
-  </div>
-</section>
+      </section>
 
       {/* Statistics */}
 
-<section className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+      <section className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
 
-  {/* Research Papers */}
+        {/* Research Papers */}
 
-  <div
-    className="
-      rounded-2xl
-      border
-      border-[var(--border-color)]
-      bg-[var(--card-bg)]
-      p-6
-      transition
-      hover:bg-[var(--card-hover)]
-    "
-  >
+        <div
+          className="
+            rounded-2xl
+            border
+            border-[var(--border-color)]
+            bg-[var(--card-bg)]
+            p-6
+            transition
+            hover:bg-[var(--card-hover)]
+          "
+        >
 
-    <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between">
 
-      <p className="text-sm font-medium text-[var(--secondary-text)]">
+            <p className="text-sm font-medium text-[var(--secondary-text)]">
+              Research Papers
+            </p>
 
-        Research Papers
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--card-hover)]">
 
-      </p>
+              <FileText
+                size={22}
+                className="text-[var(--primary-text)]"
+              />
 
-      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--card-hover)]">
+            </div>
 
-        <FileText
-          size={22}
-          className="text-[var(--primary-text)]"
-        />
+          </div>
 
-      </div>
+          <h2 className="mt-6 text-4xl font-bold text-[var(--primary-text)]">
+            {dashboard.total_papers}
+          </h2>
 
-    </div>
+          <p className="mt-2 text-sm text-[var(--muted-text)]">
+            Uploaded papers
+          </p>
 
-    <h2 className="mt-6 text-4xl font-bold text-[var(--primary-text)]">
+        </div>
 
-      {dashboard.total_papers}
+        {/* AI Analyses */}
 
-    </h2>
+        <div
+          className="
+            rounded-2xl
+            border
+            border-[var(--border-color)]
+            bg-[var(--card-bg)]
+            p-6
+            transition
+            hover:bg-[var(--card-hover)]
+          "
+        >
 
-    <p className="mt-2 text-sm text-[var(--muted-text)]">
+          <div className="flex items-center justify-between">
 
-      Uploaded papers
+            <p className="text-sm font-medium text-[var(--secondary-text)]">
+              AI Analyses
+            </p>
 
-    </p>
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--card-hover)]">
 
-  </div>
+              <BrainCircuit
+                size={22}
+                className="text-[var(--primary-text)]"
+              />
 
-  {/* AI Analyses */}
+            </div>
 
-  <div
-    className="
-      rounded-2xl
-      border
-      border-[var(--border-color)]
-      bg-[var(--card-bg)]
-      p-6
-      transition
-      hover:bg-[var(--card-hover)]
-    "
-  >
+          </div>
 
-    <div className="flex items-center justify-between">
+          <h2 className="mt-6 text-4xl font-bold text-[var(--primary-text)]">
+            {dashboard.total_analysis}
+          </h2>
 
-      <p className="text-sm font-medium text-[var(--secondary-text)]">
+          <p className="mt-2 text-sm text-[var(--muted-text)]">
+            Completed analyses
+          </p>
 
-        AI Analyses
+        </div>
 
-      </p>
+        {/* Literature Surveys */}
 
-      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--card-hover)]">
+        <div
+          className="
+            rounded-2xl
+            border
+            border-[var(--border-color)]
+            bg-[var(--card-bg)]
+            p-6
+            transition
+            hover:bg-[var(--card-hover)]
+          "
+        >
 
-        <BrainCircuit
-          size={22}
-          className="text-[var(--primary-text)]"
-        />
+          <div className="flex items-center justify-between">
 
-      </div>
+            <p className="text-sm font-medium text-[var(--secondary-text)]">
+              Literature Surveys
+            </p>
 
-    </div>
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--card-hover)]">
 
-    <h2 className="mt-6 text-4xl font-bold text-[var(--primary-text)]">
+              <FileOutput
+                size={22}
+                className="text-[var(--primary-text)]"
+              />
 
-      {dashboard.total_analysis}
+            </div>
 
-    </h2>
+          </div>
 
-    <p className="mt-2 text-sm text-[var(--muted-text)]">
+          <h2 className="mt-6 text-4xl font-bold text-[var(--primary-text)]">
+            {dashboard.literature_surveys}
+          </h2>
 
-      Completed analyses
+          <p className="mt-2 text-sm text-[var(--muted-text)]">
+            Generated surveys
+          </p>
 
-    </p>
+        </div>
 
-  </div>
+        {/* Research Gaps */}
 
-  {/* Literature Surveys */}
+        <div
+          className="
+            rounded-2xl
+            border
+            border-[var(--border-color)]
+            bg-[var(--card-bg)]
+            p-6
+            transition
+            hover:bg-[var(--card-hover)]
+          "
+        >
 
-  <div
-    className="
-      rounded-2xl
-      border
-      border-[var(--border-color)]
-      bg-[var(--card-bg)]
-      p-6
-      transition
-      hover:bg-[var(--card-hover)]
-    "
-  >
+          <div className="flex items-center justify-between">
 
-    <div className="flex items-center justify-between">
+            <p className="text-sm font-medium text-[var(--secondary-text)]">
+              Research Gaps
+            </p>
 
-      <p className="text-sm font-medium text-[var(--secondary-text)]">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--card-hover)]">
 
-        Literature Surveys
+              <Search
+                size={22}
+                className="text-[var(--primary-text)]"
+              />
 
-      </p>
+            </div>
 
-      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--card-hover)]">
+          </div>
 
-        <FileOutput
-          size={22}
-          className="text-[var(--primary-text)]"
-        />
+          <h2 className="mt-6 text-4xl font-bold text-[var(--primary-text)]">
+            {dashboard.research_gap}
+          </h2>
 
-      </div>
+          <p className="mt-2 text-sm text-[var(--muted-text)]">
+            Gap detection analyses
+          </p>
 
-    </div>
+        </div>
 
-    <h2 className="mt-6 text-4xl font-bold text-[var(--primary-text)]">
-
-      {dashboard.literature_surveys}
-
-    </h2>
-
-    <p className="mt-2 text-sm text-[var(--muted-text)]">
-
-      Generated surveys
-
-    </p>
-
-  </div>
-
-  {/* Research Gaps */}
-
-  <div
-    className="
-      rounded-2xl
-      border
-      border-[var(--border-color)]
-      bg-[var(--card-bg)]
-      p-6
-      transition
-      hover:bg-[var(--card-hover)]
-    "
-  >
-
-    <div className="flex items-center justify-between">
-
-      <p className="text-sm font-medium text-[var(--secondary-text)]">
-
-        Research Gaps
-
-      </p>
-
-      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--card-hover)]">
-
-        <Search
-          size={22}
-          className="text-[var(--primary-text)]"
-        />
-
-      </div>
-
-    </div>
-
-    <h2 className="mt-6 text-4xl font-bold text-[var(--primary-text)]">
-
-      {dashboard.research_gap}
-
-    </h2>
-
-    <p className="mt-2 text-sm text-[var(--muted-text)]">
-
-      Gap detection analyses
-
-    </p>
-
-  </div>
-
-</section>
+      </section>
 
       {/* Start Research */}
 
@@ -509,25 +491,19 @@ const loadRamStatus = async () => {
             <div>
 
               <h2 className="text-2xl font-semibold text-[var(--primary-text)]">
-
                 Start your research workspace
-
               </h2>
 
               <p className="mt-3 max-w-2xl leading-7 text-[var(--secondary-text)]">
-
                 Upload your first research paper to
                 begin organizing sources and preparing
                 for AI-powered research analysis.
-
               </p>
 
             </div>
 
             <button
-              onClick={() =>
-                navigate("/upload")
-              }
+              onClick={() => navigate("/upload")}
               className="
                 flex
                 shrink-0
@@ -556,248 +532,228 @@ const loadRamStatus = async () => {
         </section>
 
       )}
-    {/* Research Overview */}
 
-<section className="mt-10">
+      {/* Research Overview */}
 
-  <div className="flex items-center justify-between">
+      <section className="mt-10">
 
-    <div>
+        <div className="flex items-center justify-between">
 
-      <h2 className="text-2xl font-semibold text-[var(--primary-text)]">
-        Research Overview
-      </h2>
+          <div>
 
-      <p className="mt-2 text-sm text-[var(--muted-text)]">
-        Domains analyzed by ResearchMind AI.
-      </p>
+            <h2 className="text-2xl font-semibold text-[var(--primary-text)]">
+              Research Overview
+            </h2>
 
-    </div>
+            <p className="mt-2 text-sm text-[var(--muted-text)]">
+              Domains analyzed by RAGFlow AI.
+            </p>
 
-  </div>
+          </div>
 
-  <div className="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+        </div>
 
-    {dashboard.domains.length === 0 ? (
+        <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
 
-      <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--card-bg)] p-8">
+          {dashboard.domains.length === 0 ? (
 
-        <p className="text-[var(--muted-text)]">
-          No research domains available.
-        </p>
+            <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--card-bg)] p-8">
 
-      </div>
+              <p className="text-[var(--muted-text)]">
+                No research domains available.
+              </p>
 
-    ) : (
+            </div>
 
-      dashboard.domains.map((item, index) => (
+          ) : (
 
-        <div
-          key={index}
-          className="
-            rounded-2xl
-            border
-            border-[var(--border-color)]
-            bg-[var(--card-bg)]
-            p-6
-            transition
-            hover:bg-[var(--card-hover)]
-          "
-        >
+            dashboard.domains.map((item, index) => (
 
-          <BrainCircuit
-            size={30}
-            className="text-[var(--primary-text)]"
-          />
+              <div
+                key={index}
+                className="
+                  rounded-2xl
+                  border
+                  border-[var(--border-color)]
+                  bg-[var(--card-bg)]
+                  p-6
+                  transition
+                  hover:bg-[var(--card-hover)]
+                "
+              >
 
-          <h3 className="mt-4 text-lg font-semibold text-[var(--primary-text)]">
-            {item.domain}
-          </h3>
+                <BrainCircuit
+                  size={30}
+                  className="text-[var(--primary-text)]"
+                />
+
+                <h3 className="mt-4 text-lg font-semibold text-[var(--primary-text)]">
+                  {item.domain}
+                </h3>
+
+                <p className="mt-2 text-sm text-[var(--muted-text)]">
+                  {item.count} Analysis
+                </p>
+
+              </div>
+
+            ))
+
+          )}
+
+        </div>
+
+      </section>
+
+      {/* AI Research Modules */}
+
+      <section className="mt-12">
+
+        <div>
+
+          <h2 className="text-2xl font-semibold text-[var(--primary-text)]">
+            AI Research Modules
+          </h2>
 
           <p className="mt-2 text-sm text-[var(--muted-text)]">
-            {item.count} Analysis
+            Access the core AI features available in RAGFlow AI.
           </p>
 
         </div>
 
-      ))
+        <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
 
-    )}
+          {/* Upload Papers */}
 
-  </div>
+          <button
+            onClick={() => navigate("/upload")}
+            className="
+              group
+              rounded-2xl
+              border
+              border-[var(--border-color)]
+              bg-[var(--card-bg)]
+              p-6
+              text-left
+              transition
+              hover:bg-[var(--card-hover)]
+            "
+          >
 
-</section>
-    
+            <Upload
+              size={36}
+              className="text-[var(--primary-text)]"
+            />
 
-      {/* AI Research Modules */}
+            <h3 className="mt-5 text-lg font-semibold text-[var(--primary-text)]">
+              Upload Papers
+            </h3>
 
-<section className="mt-12">
+            <p className="mt-2 text-sm leading-6 text-[var(--muted-text)]">
+              Upload one or more research papers for AI analysis.
+            </p>
 
-  <div>
+          </button>
 
-    <h2 className="text-2xl font-semibold text-[var(--primary-text)]">
+          {/* Literature Survey */}
 
-      AI Research Modules
+          <button
+            onClick={() => navigate("/literature-survey")}
+            className="
+              group
+              rounded-2xl
+              border
+              border-[var(--border-color)]
+              bg-[var(--card-bg)]
+              p-6
+              text-left
+              transition
+              hover:bg-[var(--card-hover)]
+            "
+          >
 
-    </h2>
+            <FileOutput
+              size={28}
+              className="text-[var(--primary-text)]"
+            />
 
-    <p className="mt-2 text-sm text-[var(--muted-text)]">
+            <h3 className="mt-5 text-lg font-semibold text-[var(--primary-text)]">
+              Literature Survey
+            </h3>
 
-      Access the core AI features available in ResearchMind AI.
+            <p className="mt-2 text-sm leading-6 text-[var(--muted-text)]">
+              Generate a structured literature survey from uploaded papers.
+            </p>
 
-    </p>
+          </button>
 
-  </div>
+          {/* Research Gap */}
 
-  <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+          <button
+            onClick={() => navigate("/research-gap")}
+            className="
+              group
+              rounded-2xl
+              border
+              border-[var(--border-color)]
+              bg-[var(--card-bg)]
+              p-6
+              text-left
+              transition
+              hover:bg-[var(--card-hover)]
+            "
+          >
 
-    {/* Upload Papers */}
+            <Search
+              size={28}
+              className="text-[var(--primary-text)]"
+            />
 
-    <button
-      onClick={() => navigate("/upload")}
-      className="
-        group
-        rounded-2xl
-        border
-        border-[var(--border-color)]
-        bg-[var(--card-bg)]
-        p-6
-        text-left
-        transition
-        hover:bg-[var(--card-hover)]
-      "
-    >
+            <h3 className="mt-5 text-lg font-semibold text-[var(--primary-text)]">
+              Research Gap Detection
+            </h3>
 
-      <Upload
-        size={36}
-        className="text-[var(--primary-text)]"
-      />
+            <p className="mt-2 text-sm leading-6 text-[var(--muted-text)]">
+              Identify unexplored areas and future research opportunities.
+            </p>
 
-      <h3 className="mt-5 text-lg font-semibold text-[var(--primary-text)]">
+          </button>
 
-        Upload Papers
+          {/* Analysis History */}
 
-      </h3>
+          <button
+            onClick={() => navigate("/history")}
+            className="
+              group
+              rounded-2xl
+              border
+              border-[var(--border-color)]
+              bg-[var(--card-bg)]
+              p-6
+              text-left
+              transition
+              hover:bg-[var(--card-hover)]
+            "
+          >
 
-      <p className="mt-2 text-sm leading-6 text-[var(--muted-text)]">
+            <History
+              size={28}
+              className="text-[var(--primary-text)]"
+            />
 
-        Upload one or more research papers for AI analysis.
+            <h3 className="mt-5 text-lg font-semibold text-[var(--primary-text)]">
+              Analysis History
+            </h3>
 
-      </p>
+            <p className="mt-2 text-sm leading-6 text-[var(--muted-text)]">
+              View previous literature surveys, comparisons and research gaps.
+            </p>
 
-    </button>
+          </button>
 
-    {/* Literature Survey */}
+        </div>
 
-    <button
-      onClick={() => navigate("/literature-survey")}
-      className="
-        group
-        rounded-2xl
-        border
-        border-[var(--border-color)]
-        bg-[var(--card-bg)]
-        p-6
-        text-left
-        transition
-        hover:bg-[var(--card-hover)]
-      "
-    >
-
-      <FileOutput
-        size={28}
-        className="text-[var(--primary-text)]"
-      />
-
-      <h3 className="mt-5 text-lg font-semibold text-[var(--primary-text)]">
-
-        Literature Survey
-
-      </h3>
-
-      <p className="mt-2 text-sm leading-6 text-[var(--muted-text)]">
-
-        Generate a structured literature survey from uploaded papers.
-
-      </p>
-
-    </button>
-
-    {/* Research Gap */}
-
-    <button
-      onClick={() => navigate("/research-gap")}
-      className="
-        group
-        rounded-2xl
-        border
-        border-[var(--border-color)]
-        bg-[var(--card-bg)]
-        p-6
-        text-left
-        transition
-        hover:bg-[var(--card-hover)]
-      "
-    >
-
-      <Search
-        size={28}
-        className="text-[var(--primary-text)]"
-      />
-
-      <h3 className="mt-5 text-lg font-semibold text-[var(--primary-text)]">
-
-        Research Gap Detection
-
-      </h3>
-
-      <p className="mt-2 text-sm leading-6 text-[var(--muted-text)]">
-
-        Identify unexplored areas and future research opportunities.
-
-      </p>
-
-    </button>
-
-    {/* Analysis History */}
-
-    <button
-      onClick={() => navigate("/history")}
-      className="
-        group
-        rounded-2xl
-        border
-        border-[var(--border-color)]
-        bg-[var(--card-bg)]
-        p-6
-        text-left
-        transition
-        hover:bg-[var(--card-hover)]
-      "
-    >
-
-      <History
-        size={28}
-        className="text-[var(--primary-text)]"
-      />
-
-      <h3 className="mt-5 text-lg font-semibold text-[var(--primary-text)]">
-
-        Analysis History
-
-      </h3>
-
-      <p className="mt-2 text-sm leading-6 text-[var(--muted-text)]">
-
-        View previous literature surveys, comparisons and research gaps.
-
-      </p>
-
-    </button>
-
-  </div>
-
-</section>
+      </section>
 
       {/* Recent Activity */}
 
@@ -808,23 +764,17 @@ const loadRamStatus = async () => {
           <div>
 
             <h2 className="text-2xl font-semibold text-[var(--primary-text)]">
-
               Recent Activity
-
             </h2>
 
             <p className="mt-2 text-sm text-[var(--muted-text)]">
-
               Your latest research activity will appear here.
-
             </p>
 
           </div>
 
           <button
-            onClick={() =>
-              navigate("/history")
-            }
+            onClick={() => navigate("/history")}
             className="
               flex
               items-center
@@ -845,84 +795,72 @@ const loadRamStatus = async () => {
 
         </div>
 
-   {dashboard.recent_activity.length === 0 ? (
+        {dashboard.recent_activity.length === 0 ? (
 
-  <div
-    className="
-      mt-6
-      rounded-2xl
-      border
-      border-[var(--border-color)]
-      bg-[var(--card-bg)]
-      px-8
-      py-14
-      text-center
-    "
-  >
+          <div
+            className="
+              mt-6
+              rounded-2xl
+              border
+              border-[var(--border-color)]
+              bg-[var(--card-bg)]
+              px-8
+              py-14
+              text-center
+            "
+          >
 
-    <History
-      size={40}
-      className="mx-auto text-[var(--secondary-text)]"
-    />
+            <History
+              size={40}
+              className="mx-auto text-[var(--secondary-text)]"
+            />
 
-    <h3 className="mt-6 text-xl font-semibold text-[var(--primary-text)]">
+            <h3 className="mt-6 text-xl font-semibold text-[var(--primary-text)]">
+              No Recent Activity
+            </h3>
 
-      No Recent Activity
+            <p className="mt-3 text-[var(--muted-text)]">
+              Your completed AI analyses will appear here.
+            </p>
 
-    </h3>
+          </div>
 
-    <p className="mt-3 text-[var(--muted-text)]">
+        ) : (
 
-      Your completed AI analyses will appear here.
+          <div className="mt-6 space-y-4">
 
-    </p>
+            {dashboard.recent_activity.map((activity) => (
 
-  </div>
+              <div
+                key={activity.id}
+                className="
+                  rounded-2xl
+                  border
+                  border-[var(--border-color)]
+                  bg-[var(--card-bg)]
+                  p-5
+                "
+              >
 
-) : (
+                <h3 className="font-semibold text-[var(--primary-text)]">
+                  {activity.analysis_type}
+                </h3>
 
-  <div className="mt-6 space-y-4">
+                <p className="mt-1 text-sm text-[var(--secondary-text)]">
+                  Domain: {activity.domain}
+                </p>
 
-    {dashboard.recent_activity.map((activity) => (
+                <p className="mt-1 text-xs text-[var(--muted-text)]">
+                  {activity.created_at}
+                </p>
 
-      <div
-        key={activity.id}
-        className="
-          rounded-2xl
-          border
-          border-[var(--border-color)]
-          bg-[var(--card-bg)]
-          p-5
-        "
-      >
+              </div>
 
-        <h3 className="font-semibold text-[var(--primary-text)]">
+            ))}
 
-          {activity.analysis_type}
+          </div>
 
-        </h3>
-
-        <p className="mt-1 text-sm text-[var(--secondary-text)]">
-
-          Domain: {activity.domain}
-
-        </p>
-
-        <p className="mt-1 text-xs text-[var(--muted-text)]">
-
-          {activity.created_at}
-
-        </p>
-
-      </div>
-
-    ))}
-
-  </div>
-
-)}
-
-        
+        )}
 
       </section>
 

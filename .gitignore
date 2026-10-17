@@ -1,19 +1,96 @@
-backend/venv/
-__pycache__/
-*.pyc
-.env
-node_modules/
-.vscode/
-*.log
 
+# ==========================================
+# Environment Variables and Secrets
+# ==========================================
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# ==========================================
+# Python Virtual Environments
+# ==========================================
+venv/
+.venv/
+env/
+backend/venv/
+
+# ==========================================
+# Python Cache and Compiled Files
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
 backend/__pycache__/
+
+# ==========================================
+# Node.js and Frontend Dependencies
+# ==========================================
+node_modules/
 frontend/node_modules/
+
+# ==========================================
+# Build Output
+# ==========================================
+dist/
+build/
+frontend/dist/
+
+# ==========================================
+# IDE and Editor Settings
+# ==========================================
+.vscode/
+.idea/
+
+# ==========================================
+# Logs and Temporary Files
+# ==========================================
+*.log
+*.tmp
+*.temp
+
+# ==========================================
+# Local Databases
+# ==========================================
+database/*.db
+database/*.sqlite
+database/*.sqlite3
+*.db-journal
+
+# ==========================================
+# Uploaded and Processed Documents
+# ==========================================
 backend/uploads/
 backend/processed/
 backend/summaries/
+
+# ==========================================
+# Vector Database and Generated Indexes
+# ==========================================
 backend/vector_db/
-database/*.db
+vector_db/
+faiss_index/
+
+# ==========================================
+# Local AI Models
+# ==========================================
+*.gguf
+
+# ==========================================
+# Archives
+# ==========================================
 *.zip
 
-# Ignore local AI models
-*.gguf
+# ==========================================
+# Operating System Files
+# ==========================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==========================================
+# Test and Coverage Output
+# ==========================================
+.pytest_cache/
+.coverage
+htmlcov/

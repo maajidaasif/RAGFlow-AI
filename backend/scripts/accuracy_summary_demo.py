@@ -1,3 +1,8 @@
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 from llm.local_llm import ask_llm
 from services.paper_comparison import PaperComparisonEngine
 

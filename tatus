@@ -1,0 +1,356 @@
+warning: in the working copy of 'backend/config.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'backend/models/analysis_model.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'backend/models/paper_model.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'backend/requirements.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'backend/routes/literature_routes.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'backend/routes/paper_routes.py', LF will be replaced by CRLF the next time Git touches it
+README.md:177: trailing whitespace.
+[32m+[m[32m└── ...[m[41m[m
+README.md:178: trailing whitespace.
+[32m+[m[41m[m
+README.md:179: trailing whitespace.
+[32m+[m[32m---[m[41m[m
+README.md:180: trailing whitespace.
+[32m+[m[41m[m
+README.md:181: trailing whitespace.
+[32m+[m[32m## ⚙️ Getting Started[m[41m[m
+README.md:182: trailing whitespace.
+[32m+[m[41m[m
+README.md:183: trailing whitespace.
+[32m+[m[32m### Prerequisites[m[41m[m
+README.md:184: trailing whitespace.
+[32m+[m[41m[m
+README.md:185: trailing whitespace.
+[32m+[m[32m| Requirement | Version |[m[41m[m
+README.md:186: trailing whitespace.
+[32m+[m[32m|---|---|[m[41m[m
+README.md:187: trailing whitespace.
+[32m+[m[32m| Python | 3.11.x |[m[41m[m
+README.md:188: trailing whitespace.
+[32m+[m[32m| Node.js | 18+ |[m[41m[m
+README.md:189: trailing whitespace.
+[32m+[m[32m| RAM (available) | 4 GB minimum |[m[41m[m
+README.md:190: trailing whitespace.
+[32m+[m[32m| Disk space for model | ~2 GB |[m[41m[m
+README.md:191: trailing whitespace.
+[32m+[m[41m[m
+README.md:192: trailing whitespace.
+[32m+[m[32m---[m[41m[m
+README.md:193: trailing whitespace.
+[32m+[m[41m[m
+README.md:194: trailing whitespace.
+[32m+[m[32m### 1. Clone the Repository[m[41m[m
+README.md:195: trailing whitespace.
+[32m+[m[41m[m
+README.md:196: trailing whitespace.
+[32m+[m[32m```bash[m[41m[m
+README.md:197: trailing whitespace.
+[32m+[m[32mgit clone https://github.com/maajidaasif/RAGFlow-AI.git[m[41m[m
+README.md:198: trailing whitespace.
+[32m+[m[32mcd RAGFlow-AI[m[41m[m
+README.md:199: trailing whitespace.
+[32m+[m[32m```[m[41m[m
+README.md:200: trailing whitespace.
+[32m+[m[41m[m
+README.md:201: trailing whitespace.
+[32m+[m[32m---[m[41m[m
+README.md:202: trailing whitespace.
+[32m+[m[41m[m
+README.md:203: trailing whitespace.
+[32m+[m[32m### 2. Backend Setup[m[41m[m
+README.md:204: trailing whitespace.
+[32m+[m[41m[m
+README.md:205: trailing whitespace.
+[32m+[m[32m```bash[m[41m[m
+README.md:206: trailing whitespace.
+[32m+[m[32mcd backend[m[41m[m
+README.md:207: trailing whitespace.
+[32m+[m[41m[m
+README.md:208: trailing whitespace.
+[32m+[m[32m# Create and activate virtual environment[m[41m[m
+README.md:209: trailing whitespace.
+[32m+[m[32mpython -m venv venv[m[41m[m
+README.md:210: trailing whitespace.
+[32m+[m[41m[m
+README.md:211: trailing whitespace.
+[32m+[m[32m# Windows[m[41m[m
+README.md:212: trailing whitespace.
+[32m+[m[32mvenv\Scripts\activate[m[41m[m
+README.md:213: trailing whitespace.
+[32m+[m[41m[m
+README.md:214: trailing whitespace.
+[32m+[m[32m# macOS / Linux[m[41m[m
+README.md:215: trailing whitespace.
+[32m+[m[32msource venv/bin/activate[m[41m[m
+README.md:216: trailing whitespace.
+[32m+[m[41m[m
+README.md:217: trailing whitespace.
+[32m+[m[32m# Install dependencies[m[41m[m
+README.md:218: trailing whitespace.
+[32m+[m[32mpip install -r requirements.txt[m[41m[m
+README.md:219: trailing whitespace.
+[32m+[m[32m```[m[41m[m
+README.md:220: trailing whitespace.
+[32m+[m[41m[m
+README.md:221: trailing whitespace.
+[32m+[m[32m---[m[41m[m
+README.md:222: trailing whitespace.
+[32m+[m[41m[m
+README.md:223: trailing whitespace.
+[32m+[m[32m### 3. 🤖 Local LLM Setup (Required)[m[41m[m
+README.md:224: trailing whitespace.
+[32m+[m[41m[m
+README.md:225: trailing whitespace.
+[32m+[m[32m> **This step is mandatory.** The application will not start without the GGUF model file in place.[m[41m[m
+README.md:226: trailing whitespace.
+[32m+[m[41m[m
+README.md:227: trailing whitespace.
+[32m+[m[32m#### What the application uses[m[41m[m
+README.md:228: trailing whitespace.
+[32m+[m[41m[m
+README.md:229: trailing whitespace.
+[32m+[m[32m| Property | Value |[m[41m[m
+README.md:230: trailing whitespace.
+[32m+[m[32m|---|---|[m[41m[m
+README.md:231: trailing whitespace.
+[32m+[m[32m| **Library** | `llama-cpp-python` (NOT Ollama) |[m[41m[m
+README.md:232: trailing whitespace.
+[32m+[m[32m| **Model** | Qwen2.5-3B-Instruct |[m[41m[m
+README.md:233: trailing whitespace.
+[32m+[m[32m| **Quantization** | Q4_K_M (GGUF format) |[m[41m[m
+README.md:234: trailing whitespace.
+[32m+[m[32m| **Exact filename** | `qwen2.5-3b-instruct-q4_k_m.gguf` |[m[41m[m
+README.md:235: trailing whitespace.
+[32m+[m[32m| **Expected path** | `backend/models/qwen2.5-3b-instruct-q4_k_m.gguf` |[m[41m[m
+README.md:236: trailing whitespace.
+[32m+[m[32m| **Context window** | 4096 tokens |[m[41m[m
+README.md:237: trailing whitespace.
+[32m+[m[32m| **GPU offload** | Disabled (CPU-only, `n_gpu_layers=0`) |[m[41m[m
+README.md:238: trailing whitespace.
+[32m+[m[32m| **Threads** | 8 |[m[41m[m
+README.md:239: trailing whitespace.
+[32m+[m[41m[m
+README.md:240: trailing whitespace.
+[32m+[m[32m#### Step 1 — Create the models/ directory[m[41m[m
+README.md:241: trailing whitespace.
+[32m+[m[41m[m
+README.md:242: trailing whitespace.
+[32m+[m[32m```bash[m[41m[m
+README.md:243: trailing whitespace.
+[32m+[m[32m# Run from the backend/ folder[m[41m[m
+README.md:244: trailing whitespace.
+[32m+[m[32mmkdir models[m[41m[m
+README.md:245: trailing whitespace.
+[32m+[m[32m```[m[41m[m
+README.md:246: trailing whitespace.
+[32m+[m[41m[m
+README.md:247: trailing whitespace.
+[32m+[m[32m#### Step 2 — Download the GGUF model[m[41m[m
+README.md:248: trailing whitespace.
+[32m+[m[41m[m
+README.md:249: trailing whitespace.
+[32m+[m[32mDownload the file from the official Hugging Face repository:[m[41m[m
+README.md:250: trailing whitespace.
+[32m+[m[41m[m
+README.md:251: trailing whitespace.
+[32m+[m[32m**Model source:**[m[41m[m
+README.md:252: trailing whitespace.
+[32m+[m[32m```[m[41m[m
+README.md:253: trailing whitespace.
+[32m+[m[32mhttps://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF[m[41m[m
+README.md:254: trailing whitespace.
+[32m+[m[32m```[m[41m[m
+README.md:255: trailing whitespace.
+[32m+[m[41m[m
+README.md:256: trailing whitespace.
+[32m+[m[32m**Direct file to download:**[m[41m[m
+README.md:257: trailing whitespace.
+[32m+[m[32m```[m[41m[m
+README.md:258: trailing whitespace.
+[32m+[m[32mqwen2.5-3b-instruct-q4_k_m.gguf[m[41m[m
+README.md:259: trailing whitespace.
+[32m+[m[32m```[m[41m[m
+README.md:260: trailing whitespace.
+[32m+[m[41m[m
+README.md:261: trailing whitespace.
+[32m+[m[32mYou can download it via browser, or using `huggingface-hub`:[m[41m[m
+README.md:262: trailing whitespace.
+[32m+[m[41m[m
+README.md:263: trailing whitespace.
+[32m+[m[32m```bash[m[41m[m
+README.md:264: trailing whitespace.
+[32m+[m[32mpip install huggingface-hub[m[41m[m
+README.md:265: trailing whitespace.
+[32m+[m[41m[m
+README.md:266: trailing whitespace.
+[32m+[m[32mpython -c "[m[41m[m
+README.md:267: trailing whitespace.
+[32m+[m[32mfrom huggingface_hub import hf_hub_download[m[41m[m
+README.md:268: trailing whitespace.
+[32m+[m[32mhf_hub_download([m[41m[m
+README.md:269: trailing whitespace.
+[32m+[m[32m    repo_id='Qwen/Qwen2.5-3B-Instruct-GGUF',[m[41m[m
+README.md:270: trailing whitespace.
+[32m+[m[32m    filename='qwen2.5-3b-instruct-q4_k_m.gguf',[m[41m[m
+README.md:271: trailing whitespace.
+[32m+[m[32m    local_dir='models'[m[41m[m
+README.md:272: trailing whitespace.
+[32m+[m[32m)[m[41m[m
+README.md:273: trailing whitespace.
+[32m+[m[32m"[m[41m[m
+README.md:274: trailing whitespace.
+[32m+[m[32m```[m[41m[m
+README.md:275: trailing whitespace.
+[32m+[m[41m[m
+README.md:276: trailing whitespace.
+[32m+[m[32m#### Step 3 — Verify the file is in the correct location[m[41m[m
+README.md:277: trailing whitespace.
+[32m+[m[41m[m
+README.md:278: trailing whitespace.
+[32m+[m[32m```[m[41m[m
+README.md:279: trailing whitespace.
+[32m+[m[32mbackend/[m[41m[m
+README.md:280: trailing whitespace.
+[32m+[m[32m└── models/[m[41m[m
+README.md:281: trailing whitespace.
+[32m+[m[32m    └── qwen2.5-3b-instruct-q4_k_m.gguf   ✅  (~2 GB)[m[41m[m
+README.md:282: trailing whitespace.
+[32m+[m[32m```[m[41m[m
+README.md:283: trailing whitespace.
+[32m+[m[41m[m
+README.md:284: trailing whitespace.
+[32m+[m[32m> ⚠️ The filename must match **exactly**: `qwen2.5-3b-instruct-q4_k_m.gguf`[m[41m  [m
+README.md:285: trailing whitespace.
+[32m+[m[32m> Any rename will cause a `FileNotFoundError` on startup.[m[41m[m
+README.md:286: trailing whitespace.
+[32m+[m[41m[m
+README.md:287: trailing whitespace.
+[32m+[m[32m#### Step 4 — Verify the model loads[m[41m[m
+README.md:288: trailing whitespace.
+[32m+[m[41m[m
+README.md:289: trailing whitespace.
+[32m+[m[32m```bash[m[41m[m
+README.md:290: trailing whitespace.
+[32m+[m[32m# From the backend/ folder, with venv active[m[41m[m
+README.md:291: trailing whitespace.
+[32m+[m[32mpython -c "from llm.local_llm import initialize_llm; initialize_llm(); print('Model loaded successfully')"[m[41m[m
+README.md:292: trailing whitespace.
+[32m+[m[32m```[m[41m[m
+README.md:293: trailing whitespace.
+[32m+[m[41m[m
+README.md:294: trailing whitespace.
+[32m+[m[32mExpected output:[m[41m[m
+README.md:295: trailing whitespace.
+[32m+[m[32m```[m[41m[m
+README.md:296: trailing whitespace.
+[32m+[m[32mLoading Qwen2.5-3B-Instruct...[m[41m[m
+README.md:297: trailing whitespace.
+[32m+[m[32mModel loaded successfully[m[41m[m
+README.md:298: trailing whitespace.
+[32m+[m[32m```[m[41m[m
+README.md:299: trailing whitespace.
+[32m+[m[41m[m
+README.md:300: trailing whitespace.
+[32m+[m[32m---[m[41m[m
+README.md:301: trailing whitespace.
+[32m+[m[41m[m
+README.md:302: trailing whitespace.
+[32m+[m[32m### 4. FAISS Vector Database[m[41m[m
+README.md:303: trailing whitespace.
+[32m+[m[41m[m
+README.md:304: trailing whitespace.
+[32m+[m[32mUploading a PDF through the app now chunks, embeds, and indexes it immediately. To rebuild the entire index from the PDFs in `uploads/`, run:[m[41m[m
+README.md:305: trailing whitespace.
+[32m+[m[41m[m
+README.md:306: trailing whitespace.
+[32m+[m[32m```bash[m[41m[m
+README.md:307: trailing whitespace.
+[32m+[m[32m# From the backend/ folder[m[41m[m
+README.md:308: trailing whitespace.
+[32m+[m[32mpython embedding.py[m[41m[m
+README.md:309: trailing whitespace.
+[32m+[m[32m```[m[41m[m
+README.md:310: trailing whitespace.
+[32m+[m[41m[m
+README.md:311: trailing whitespace.
+[32m+[m[32mThis creates `backend/vector_db/faiss_index.bin` and JSON metadata in `backend/vector_db/metadata.json`.[m[41m[m
+README.md:312: trailing whitespace.
+[32m+[m[41m[m
+README.md:313: trailing whitespace.
+[32m+[m[32m---[m[41m[m
+README.md:314: trailing whitespace.
+[32m+[m[41m[m
+README.md:315: trailing whitespace.
+[32m+[m[32m### 5. Run the Backend[m[41m[m
+README.md:316: trailing whitespace.
+[32m+[m[41m[m
+README.md:317: trailing whitespace.
+[32m+[m[32m```bash[m[41m[m
+README.md:318: trailing whitespace.
+[32m+[m[32m# From the backend/ folder, with venv active[m[41m[m
+README.md:319: trailing whitespace.
+[32m+[m[32mpython app.py[m[41m[m
+README.md:320: trailing whitespace.
+[32m+[m[32m```[m[41m[m
+README.md:321: trailing whitespace.
+[32m+[m[41m[m
+README.md:322: trailing whitespace.
+[32m+[m[32mFor a new database, apply the committed baseline migration before starting Flask:[m[41m[m
+README.md:323: trailing whitespace.
+[32m+[m[41m[m
+README.md:324: trailing whitespace.
+[32m+[m[32m```powershell[m[41m[m
+README.md:325: trailing whitespace.
+[32m+[m[32mcd backend[m[41m[m
+README.md:326: trailing whitespace.
+[32m+[m[32mflask --app app db upgrade[m[41m[m
+README.md:327: trailing whitespace.
+[32m+[m[32m```[m[41m[m
+README.md:328: trailing whitespace.
+[32m+[m[41m[m
+README.md:329: trailing whitespace.
+[32m+[m[32mFor an existing database previously created with `db.create_all()`, back it up and verify its schema matches the baseline, then run `flask --app app db stamp head` once. After changing a model, create and apply a migration with `flask --app app db migrate -m "describe change"` and `flask --app app db upgrade`.[m[41m[m
+README.md:330: trailing whitespace.
+[32m+[m[41m[m
+README.md:331: trailing whitespace.
+[32m+[m[32mThe Flask server starts at: `http://localhost:5000`[m[41m[m
+README.md:332: trailing whitespace.
+[32m+[m[41m[m
+README.md:333: trailing whitespace.
+[32m+[m[32m---[m[41m[m
+README.md:334: trailing whitespace.
+[32m+[m[41m[m
+README.md:335: trailing whitespace.
+[32m+[m[32m### 6. Frontend Setup[m[41m[m
+README.md:336: trailing whitespace.
+[32m+[m[41m[m
+README.md:337: trailing whitespace.
+[32m+[m[32m```bash[m[41m[m
+README.md:338: trailing whitespace.
+[32m+[m[32mcd frontend[m[41m[m
+README.md:339: trailing whitespace.
+[32m+[m[32mnpm install[m[41m[m
+README.md:340: trailing whitespace.
+[32m+[m[32mnpm run dev[m[41m[m
+README.md:341: trailing whitespace.
+[32m+[m[32m```[m[41m[m
+README.md:342: trailing whitespace.
+[32m+[m[41m[m
+README.md:343: trailing whitespace.
+[32m+[m[32mThe React app starts at: `http://localhost:5173`[m[41m[m
+README.md:344: trailing whitespace.
+[32m+[m[41m[m
+README.md:345: trailing whitespace.
+[32m+[m[32m---[m[41m[m
+README.md:346: trailing whitespace.
+[32m+[m[41m[m
+README.md:347: trailing whitespace.
+[32m+[m[32m## 📋 Notes[m[41m[m
+README.md:348: trailing whitespace.
+[32m+[m[41m[m
+README.md:349: trailing whitespace.
+[32m+[m[32m- The application checks available RAM at startup. A minimum of **2 GB free RAM** is required to proceed.[m[41m[m
+README.md:350: trailing whitespace.
+[32m+[m[32m- The FAISS vector database must be built (step 4) before using the chatbot or analysis features.[m[41m[m
+README.md:351: trailing whitespace.
+[32m+[m[32m- The local LLM runs entirely on CPU by default. Performance depends on your machine's CPU and available RAM.[m[41m[m

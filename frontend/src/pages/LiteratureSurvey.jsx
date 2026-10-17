@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 
 import MainLayout from "../layouts/MainLayout";
+import API from "../services/authService";
 
 function LiteratureSurvey() {
 
@@ -20,11 +21,9 @@ function LiteratureSurvey() {
 
     try {
 
-      const response = await fetch(
-        "http://127.0.0.1:5000/literature-survey"
-      );
+      const response = await API.get("/literature-survey");
 
-      const data = await response.json();
+      const data = response.data;
 
       if (data.success) {
 

@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify
+from flask_jwt_extended import jwt_required
 
 from services.report_generator import ReportGenerator
 
@@ -14,6 +15,7 @@ generator = ReportGenerator()
     "/generate-report",
     methods=["POST"]
 )
+@jwt_required()
 def generate_report():
 
     try:

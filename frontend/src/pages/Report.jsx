@@ -24,7 +24,7 @@ import {
 
 import { saveAs } from "file-saver";
 
-import axios from "axios";
+import API from "../services/authService";
 
 function Report() {
 
@@ -50,9 +50,7 @@ function Report() {
 
       setGenerated(false);
 
-      const response = await axios.post(
-        "http://127.0.0.1:5000/generate-report"
-      );
+      const response = await API.post("/generate-report");
 
       setReport(response.data.report);
 

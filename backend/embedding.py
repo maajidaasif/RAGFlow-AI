@@ -30,7 +30,8 @@ def generate_embeddings(chunks, batch_size=32):
         chunks,
         batch_size=batch_size,
         show_progress_bar=True,
-        convert_to_numpy=True
+           convert_to_numpy=True,
+           normalize_embeddings=True
     )
 
     return embeddings

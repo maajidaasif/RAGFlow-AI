@@ -1,6 +1,7 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
+from flask_migrate import Migrate
 
 from config import Config
 from database import db
@@ -29,12 +30,32 @@ app.config.from_object(Config)
 
 CORS(
     app,
-    resources={r"/*": {"origins": "http://localhost:5173"}}
+    resources={
+        r"/*": {
+            "origins": [
+                "http://localhost:5173",
+                "http://127.0.0.1:5173",
+            ]
+        }
+    }
 )
 
 jwt = JWTManager(app)
 
 db.init_app(app)
+migrate = Migrate(app, db)
+
+
+# ============================================================
+# ERROR HANDLERS
+# ============================================================
+
+@app.errorhandler(413)
+def request_entity_too_large(e):
+    return jsonify({
+        "success": False,
+        "message": "File too large. Maximum upload size is 50 MB per request."
+    }), 413
 
 
 # ============================================================
@@ -84,16 +105,6 @@ def system_status():
 # ============================================================
 
 if __name__ == "__main__":
-
-    # --------------------------------------------------------
-    # Create database tables
-    # --------------------------------------------------------
-
-    with app.app_context():
-
-        db.create_all()
-
-
     # --------------------------------------------------------
     # Initialize ResearchMind AI
     # --------------------------------------------------------
@@ -119,6 +130,6 @@ if __name__ == "__main__":
     # --------------------------------------------------------
 
     app.run(
-        debug=False,
+        debug=app.config["DEBUG"],
         use_reloader=False
-)
+    )

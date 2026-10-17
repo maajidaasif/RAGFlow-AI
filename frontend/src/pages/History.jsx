@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import MainLayout from "../layouts/MainLayout";
+import API from "../services/authService";
 
 function AnalysisHistory() {
 
@@ -21,10 +22,9 @@ function AnalysisHistory() {
 
   useEffect(() => {
 
-    fetch("http://127.0.0.1:5000/analysis-history")
-      .then((res) => res.json())
-      .then((data) => {
-        setHistory(data);
+    API.get("/analysis-history")
+      .then((res) => {
+        setHistory(res.data);
       })
       .catch((err) => {
         console.log(err);
@@ -117,16 +117,13 @@ const deleteAnalysis = async (id) => {
 
   try {
 
-    const response = await fetch(
-      `http://127.0.0.1:5000/analysis-history/${id}`,
-      {
-        method: "DELETE",
-      }
+    const response = await API.delete(
+      `/analysis-history/${id}`
     );
 
-    const data = await response.json();
+    const data = response.data;
 
-    if (response.ok) {
+    if (response.status === 200) {
 
       setHistory((prev) =>
         prev.filter((item) => item.id !== id)

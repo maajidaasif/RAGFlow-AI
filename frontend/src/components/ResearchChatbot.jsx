@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./ResearchChatbot.css";
+import API from "../services/authService";
 
 function ResearchChatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,22 +27,14 @@ function ResearchChatbot() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(
-        "http://127.0.0.1:5000/api/chat",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            question: question,
-          }),
-        }
+      const response = await API.post(
+        "/api/chat",
+        { question: question }
       );
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error(
           data.message || "Something went wrong."
         );

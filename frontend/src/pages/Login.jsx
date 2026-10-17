@@ -17,12 +17,6 @@ function Login() {
         password,
       });
 
-      // Save JWT Token
-      localStorage.setItem(
-        "token",
-        response.data.access_token
-      );
-
       // Save Complete User Object
       localStorage.setItem(
         "user",

@@ -1,8 +1,14 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import get_jwt_identity, jwt_required
+import json
+import os
+from pathlib import Path
 
 from services.retriever import Retriever
 from llm.local_llm import ask_llm
 from comparison.paper_comparison import PaperComparisonEngine
+from models.paper_model import Paper
+from models.user_model import User
 
 
 # ============================================================
@@ -10,6 +16,9 @@ from comparison.paper_comparison import PaperComparisonEngine
 # ============================================================
 
 chat_bp = Blueprint("chat", __name__)
+PROJECT_FAQS = json.loads(
+    (Path(__file__).resolve().parents[1] / "project_faq.json").read_text(encoding="utf-8")
+)
 
 
 # ============================================================
@@ -34,6 +43,11 @@ def get_retriever():
         retriever = Retriever()
 
     return retriever
+
+
+def invalidate_retriever():
+    global retriever
+    retriever = None
 
 
 # ============================================================
@@ -483,356 +497,11 @@ def is_project_question(question):
 def get_direct_project_answer(question):
 
     q = normalize_question(question)
-
-    # ========================================================
-    # QWEN / LLM
-    # ========================================================
-
-    if (
-        "which llm" in q
-        or "what llm" in q
-        or "which llm model" in q
-        or "what llm model" in q
-        or "which model are you using" in q
-        or "what model are you using" in q
-        or "which llm are you using" in q
-        or "what llm are you using" in q
-        or "which model do you use" in q
-        or "what model do you use" in q
-        or "which language model are you using" in q
-        or "what language model are you using" in q
-    ):
-
-        return (
-            "ResearchMind AI uses **Qwen2.5-3B-Instruct** "
-            "as its local Large Language Model (LLM).\n\n"
-            "The model runs locally and generates answers using "
-            "the relevant research-paper context retrieved through "
-            "the RAG pipeline."
-        )
-
-
-    # ========================================================
-    # WHY QWEN
-    # ========================================================
-
-    if (
-        "why qwen" in q
-        or "why use qwen" in q
-        or "why did you choose qwen" in q
-    ):
-
-        return (
-            "ResearchMind AI uses **Qwen2.5-3B-Instruct** as the "
-            "local generation model because the project is designed "
-            "to run its AI pipeline locally without relying on "
-            "external generative-AI APIs."
-        )
-
-
-    # ========================================================
-    # LOCAL LLM
-    # ========================================================
-
-    if (
-        "why local llm" in q
-        or "why use local llm" in q
-        or "why did you choose local llm" in q
-    ):
-
-        return (
-            "ResearchMind AI uses a **local LLM** so the core chatbot "
-            "generation can run locally without depending on OpenAI, "
-            "Gemini, Claude, or other paid external AI APIs."
-        )
-
-
-    if (
-        "is the llm local" in q
-        or "is your llm local" in q
-        or "does the model run locally" in q
-    ):
-
-        return (
-            "Yes. ResearchMind AI uses **Qwen2.5-3B-Instruct** "
-            "as a local LLM."
-        )
-
-
-    # ========================================================
-    # RAG
-    # ========================================================
-
-    if (
-        q == "rag"
-        or "what is rag" in q
-        or "what does rag mean" in q
-    ):
-
-        return (
-            "**RAG** stands for **Retrieval-Augmented Generation**.\n\n"
-            "In ResearchMind AI:\n\n"
-            "1. **Retrieval** – FAISS retrieves relevant chunks "
-            "from uploaded research papers.\n"
-            "2. **Generation** – Qwen2.5-3B-Instruct uses the "
-            "retrieved context to generate the answer.\n\n"
-            "**User Question → FAISS → Relevant Context → "
-            "Qwen2.5-3B-Instruct → Answer**"
-        )
-
-
-    if (
-        "are you using rag" in q
-        or "do you use rag" in q
-        or "why rag" in q
-        or "why use rag" in q
-    ):
-
-        return (
-            "Yes. ResearchMind AI uses **Retrieval-Augmented "
-            "Generation (RAG)** to retrieve relevant information "
-            "from uploaded research papers before generating an answer."
-        )
-
-
-    # ========================================================
-    # FAISS
-    # ========================================================
-
-    if (
-        q == "faiss"
-        or "what is faiss" in q
-    ):
-
-        return (
-            "**FAISS** is the vector search/index used by "
-            "ResearchMind AI to store and retrieve research-paper "
-            "embeddings efficiently."
-        )
-
-
-    if (
-        "why faiss" in q
-        or "why use faiss" in q
-        or "why did you choose faiss" in q
-        or "are you using faiss" in q
-        or "do you use faiss" in q
-    ):
-
-        return (
-            "ResearchMind AI uses **FAISS** for efficient "
-            "similarity-based retrieval of relevant research-paper "
-            "chunks from the stored embeddings."
-        )
-
-
-    # ========================================================
-    # EMBEDDINGS
-    # ========================================================
-
-    if (
-        "which embedding model" in q
-        or "what embedding model" in q
-        or "embedding model are you using" in q
-    ):
-
-        return (
-            "ResearchMind AI uses **all-MiniLM-L6-v2** with "
-            "**Sentence Transformers** to generate embeddings "
-            "from research-paper text chunks."
-        )
-
-
-    if (
-        "what is an embedding" in q
-        or "what are embeddings" in q
-        or q == "embedding"
-        or q == "embeddings"
-    ):
-
-        return (
-            "An embedding is a numerical vector representation "
-            "of text. ResearchMind AI converts research-paper "
-            "chunks into embeddings so FAISS can retrieve text "
-            "relevant to a user's question."
-        )
-
-
-    # ========================================================
-    # API
-    # ========================================================
-
-    if "openai" in q or "open ai" in q:
-
-        return (
-            "No. The core ResearchMind AI chatbot does **not use "
-            "the OpenAI API**. It uses the local "
-            "**Qwen2.5-3B-Instruct** model."
-        )
-
-
-    if "gemini" in q:
-
-        return (
-            "No. The core ResearchMind AI chatbot does **not use "
-            "the Gemini API**. It uses the local "
-            "**Qwen2.5-3B-Instruct** model."
-        )
-
-
-    if "claude" in q:
-
-        return (
-            "No. ResearchMind AI does **not use Claude API**. "
-            "The chatbot uses the local "
-            "**Qwen2.5-3B-Instruct** model."
-        )
-
-
-    # ========================================================
-    # FINE TUNING
-    # ========================================================
-
-    if (
-        "fine tuning" in q
-        or "finetuning" in q
-        or "fine tune" in q
-        or "fine tuned" in q
-        or "lora" in q
-    ):
-
-        return (
-            "No. ResearchMind AI does **not use LoRA fine-tuning** "
-            "for Qwen2.5-3B-Instruct. The project uses the local "
-            "Qwen2.5-3B-Instruct model together with RAG."
-        )
-
-
-    # ========================================================
-    # TRAINING
-    # ========================================================
-
-    if (
-        "training your own llm" in q
-        or "train your own llm" in q
-        or "training our own llm" in q
-        or "train our own llm" in q
-        or "are you training your own llm" in q
-        or "do you train your own llm" in q
-    ):
-
-        return (
-            "No. ResearchMind AI does **not train an LLM from "
-            "scratch**. It uses the existing local "
-            "**Qwen2.5-3B-Instruct** model for generation."
-        )
-
-
-    # ========================================================
-    # OFFLINE
-    # ========================================================
-
-    if (
-        "offline" in q
-        or "without api" in q
-        or "no api" in q
-    ):
-
-        return (
-            "Yes. ResearchMind AI is designed as an **offline "
-            "AI research system**. Its core AI pipeline uses "
-            "local models instead of external generative-AI APIs."
-        )
-
-
-    # ========================================================
-    # PURPOSE
-    # ========================================================
-
-    if (
-        "purpose" in q
-        or "what is researchmind" in q
-        or "what does this project do" in q
-        or "what does this website do" in q
-        or "what is this project" in q
-        or "what is this website" in q
-    ):
-
-        return (
-            "**ResearchMind AI** is an offline AI Research "
-            "Intelligence System designed to help users "
-            "understand and analyze uploaded research papers.\n\n"
-            "Users upload PDFs, the system extracts and chunks "
-            "their text, creates embeddings, stores them in FAISS, "
-            "retrieves relevant information using RAG, and uses "
-            "Qwen2.5-3B-Instruct to generate answers locally."
-        )
-
-
-    # ========================================================
-    # ARCHITECTURE
-    # ========================================================
-
-    if (
-        "architecture" in q
-        or "tech stack" in q
-        or "technologies used" in q
-        or "technology used" in q
-    ):
-
-        return (
-            "The main ResearchMind AI architecture consists of:\n\n"
-            "- **PDF Processing** – extracts research-paper text.\n"
-            "- **Chunking** – divides text into smaller chunks.\n"
-            "- **Sentence Transformers** – generates embeddings "
-            "using all-MiniLM-L6-v2.\n"
-            "- **FAISS** – stores and retrieves embeddings.\n"
-            "- **RAG** – retrieves relevant paper context.\n"
-            "- **Qwen2.5-3B-Instruct** – generates the final answer "
-            "locally."
-        )
-
-
-    # ========================================================
-    # PDF PROCESSING
-    # ========================================================
-
-    if (
-        "pdf processing" in q
-        or "pdf extraction" in q
-        or "text extraction" in q
-        or "chunking" in q
-        or "how are pdfs processed" in q
-        or "how is pdf processed" in q
-    ):
-
-        return (
-            "ResearchMind AI processes uploaded PDFs by extracting "
-            "their text, cleaning the content, dividing it into "
-            "smaller chunks, generating embeddings for those chunks, "
-            "and storing the embeddings in FAISS for later retrieval."
-        )
-
-
-    # ========================================================
-    # CHATBOT
-    # ========================================================
-
-    if (
-        "chatbot" in q
-        or "research assistant" in q
-        or "how does the chatbot work" in q
-        or "how does chatbot work" in q
-    ):
-
-        return (
-            "The ResearchMind AI chatbot uses a **RAG pipeline**. "
-            "When you ask a question, FAISS searches the vector "
-            "database for relevant research-paper chunks. Those "
-            "chunks are provided to the local Qwen2.5-3B-Instruct "
-            "model, which generates the answer."
-        )
-
+    for faq in PROJECT_FAQS:
+        if q in faq.get("exact", []):
+            return faq["response"]
+        if any(keyword in q for keyword in faq.get("keywords", [])):
+            return faq["response"]
 
     return None
 
@@ -842,6 +511,7 @@ def get_direct_project_answer(question):
 # ============================================================
 
 @chat_bp.route("/api/chat", methods=["POST"])
+@jwt_required()
 def chat():
 
     # ========================================================
@@ -936,8 +606,22 @@ def chat():
         try:
 
             comparison_engine = PaperComparisonEngine()
+            user = User.query.filter_by(email=get_jwt_identity()).first()
+            user_papers = (
+                Paper.query.filter_by(user_id=user.id)
+                .order_by(Paper.id.desc())
+                .limit(5)
+                .all()
+                if user else []
+            )
 
-            result = comparison_engine.compare_papers()
+            result = comparison_engine.compare_papers(
+                paper_names=[
+                    os.path.basename(paper.filepath)
+                    for paper in user_papers
+                ],
+                max_papers=5
+            )
 
         except Exception as e:
 
@@ -1209,7 +893,7 @@ Answer only from the project information.
 
         return jsonify({
             "success": True,
-            "answer": "Not Available"
+            "answer": "No documents indexed yet"
         })
 
 

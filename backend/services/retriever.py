@@ -1,8 +1,15 @@
 import os
+import json
 import faiss
-import pickle
 import numpy as np
 from sentence_transformers import SentenceTransformer
+
+from services.vector_database import (
+    VECTOR_DB_DIR,
+    INDEX_FILENAME,
+    META_FILENAME,
+    as_cosine_index,
+)
 
 
 class Retriever:
@@ -38,22 +45,34 @@ class Retriever:
         # =========================================
 
         index_path = os.path.join(
-            "vector_db",
-            "faiss_index.bin"
+            VECTOR_DB_DIR,
+            INDEX_FILENAME
         )
 
         metadata_path = os.path.join(
-            "vector_db",
-            "metadata.pkl"
+            VECTOR_DB_DIR,
+            META_FILENAME
         )
 
-        if not os.path.exists(index_path):
-
-            raise FileNotFoundError(
-                f"FAISS index not found: {index_path}"
-            )
+        if not os.path.exists(index_path) or not os.path.exists(metadata_path):
+            os.makedirs(VECTOR_DB_DIR, exist_ok=True)
+            self.index = faiss.IndexFlatIP(384)
+            self.metadata = []
+            return
 
         if not os.path.exists(metadata_path):
+
+            # Detect old pickle file and give a clear migration hint
+            # instead of falling back to loading an untrusted pickle.
+            old_pkl = os.path.join(VECTOR_DB_DIR, "metadata.pkl")
+
+            if os.path.exists(old_pkl):
+                raise FileNotFoundError(
+                    f"Metadata file not found: {metadata_path}\n"
+                    "An old pickle file (metadata.pkl) was detected.\n"
+                    "Run the migration script to convert it safely:\n"
+                    "  python migrate_metadata.py"
+                )
 
             raise FileNotFoundError(
                 f"Metadata file not found: {metadata_path}"
@@ -69,10 +88,11 @@ class Retriever:
 
         with open(
             metadata_path,
-            "rb"
+            "r",
+            encoding="utf-8"
         ) as file:
 
-            self.metadata = pickle.load(file)
+            self.metadata = json.load(file)
 
         # =========================================
         # Validate Metadata / Index
@@ -87,52 +107,9 @@ class Retriever:
                 "Please run embedding.py again."
             )
 
-        # =========================================
-        # Convert Existing Vectors to Normalized
-        # Vectors
-        # =========================================
-        #
-        # Your embedding.py created an IndexFlatL2.
-        #
-        # We reconstruct those vectors and normalize
-        # them here so that retrieval works using
-        # cosine similarity.
-        #
-        # This means you do NOT have to immediately
-        # recreate your PDFs.
-        #
-
-        print("\nPreparing FAISS vectors...")
-
-        if old_index.ntotal > 0:
-
-            vectors = old_index.reconstruct_n(
-                0,
-                old_index.ntotal
-            )
-
-            vectors = np.asarray(
-                vectors,
-                dtype="float32"
-            )
-
-            # Normalize vectors
-            faiss.normalize_L2(
-                vectors
-            )
-
-            # Create cosine-similarity index
-            self.index = faiss.IndexFlatIP(
-                vectors.shape[1]
-            )
-
-            self.index.add(
-                vectors
-            )
-
-        else:
-
-            self.index = old_index
+        self.index = as_cosine_index(old_index)
+        if self.index is not old_index:
+            faiss.write_index(self.index, index_path)
 
         # =========================================
         # Print Information

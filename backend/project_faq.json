@@ -1,0 +1,85 @@
+[
+  {
+    "keywords": ["which llm", "what llm", "which llm model", "what llm model", "which model are you using", "what model are you using", "which llm are you using", "what llm are you using", "which model do you use", "what model do you use", "which language model are you using", "what language model are you using"],
+    "response": "ResearchMind AI uses **Qwen2.5-3B-Instruct** as its local Large Language Model (LLM).\n\nThe model runs locally and generates answers using the relevant research-paper context retrieved through the RAG pipeline."
+  },
+  {
+    "keywords": ["why qwen", "why use qwen", "why did you choose qwen"],
+    "response": "ResearchMind AI uses **Qwen2.5-3B-Instruct** as the local generation model because the project is designed to run its AI pipeline locally without relying on external generative-AI APIs."
+  },
+  {
+    "keywords": ["why local llm", "why use local llm", "why did you choose local llm"],
+    "response": "ResearchMind AI uses a **local LLM** so the core chatbot generation can run locally without depending on OpenAI, Gemini, Claude, or other paid external AI APIs."
+  },
+  {
+    "keywords": ["is the llm local", "is your llm local", "does the model run locally"],
+    "response": "Yes. ResearchMind AI uses **Qwen2.5-3B-Instruct** as a local LLM."
+  },
+  {
+    "exact": ["rag"],
+    "keywords": ["what is rag", "what does rag mean"],
+    "response": "**RAG** stands for **Retrieval-Augmented Generation**.\n\nIn ResearchMind AI:\n\n1. **Retrieval** – FAISS retrieves relevant chunks from uploaded research papers.\n2. **Generation** – Qwen2.5-3B-Instruct uses the retrieved context to generate the answer.\n\n**User Question → FAISS → Relevant Context → Qwen2.5-3B-Instruct → Answer**"
+  },
+  {
+    "keywords": ["are you using rag", "do you use rag", "why rag", "why use rag"],
+    "response": "Yes. ResearchMind AI uses **Retrieval-Augmented Generation (RAG)** to retrieve relevant information from uploaded research papers before generating an answer."
+  },
+  {
+    "exact": ["faiss"],
+    "keywords": ["what is faiss"],
+    "response": "**FAISS** is the vector search/index used by ResearchMind AI to store and retrieve research-paper embeddings efficiently."
+  },
+  {
+    "keywords": ["why faiss", "why use faiss", "why did you choose faiss", "are you using faiss", "do you use faiss"],
+    "response": "ResearchMind AI uses **FAISS** for efficient similarity-based retrieval of relevant research-paper chunks from the stored embeddings."
+  },
+  {
+    "keywords": ["which embedding model", "what embedding model", "embedding model are you using"],
+    "response": "ResearchMind AI uses **all-MiniLM-L6-v2** with **Sentence Transformers** to generate embeddings from research-paper text chunks."
+  },
+  {
+    "exact": ["embedding", "embeddings"],
+    "keywords": ["what is an embedding", "what are embeddings"],
+    "response": "An embedding is a numerical vector representation of text. ResearchMind AI converts research-paper chunks into embeddings so FAISS can retrieve text relevant to a user's question."
+  },
+  {
+    "keywords": ["openai", "open ai"],
+    "response": "No. The core ResearchMind AI chatbot does **not use the OpenAI API**. It uses the local **Qwen2.5-3B-Instruct** model."
+  },
+  {
+    "keywords": ["gemini"],
+    "response": "No. The core ResearchMind AI chatbot does **not use the Gemini API**. It uses the local **Qwen2.5-3B-Instruct** model."
+  },
+  {
+    "keywords": ["claude"],
+    "response": "No. ResearchMind AI does **not use Claude API**. The chatbot uses the local **Qwen2.5-3B-Instruct** model."
+  },
+  {
+    "keywords": ["fine tuning", "finetuning", "fine tune", "fine tuned", "lora"],
+    "response": "No. ResearchMind AI does **not use LoRA fine-tuning** for Qwen2.5-3B-Instruct. The project uses the local Qwen2.5-3B-Instruct model together with RAG."
+  },
+  {
+    "keywords": ["training your own llm", "train your own llm", "training our own llm", "train our own llm", "are you training your own llm", "do you train your own llm"],
+    "response": "No. ResearchMind AI does **not train an LLM from scratch**. It uses the existing local **Qwen2.5-3B-Instruct** model for generation."
+  },
+  {
+    "keywords": ["offline", "without api", "no api"],
+    "response": "Yes. ResearchMind AI is designed as an **offline AI research system**. Its core AI pipeline uses local models instead of external generative-AI APIs."
+  },
+  {
+    "keywords": ["purpose", "what is researchmind", "what does this project do", "what does this website do", "what is this project", "what is this website"],
+    "response": "**ResearchMind AI** is an offline AI Research Intelligence System designed to help users understand and analyze uploaded research papers.\n\nUsers upload PDFs, the system extracts and chunks their text, creates embeddings, stores them in FAISS, retrieves relevant information using RAG, and uses Qwen2.5-3B-Instruct to generate answers locally."
+  },
+  {
+    "keywords": ["architecture", "tech stack", "technologies used", "technology used"],
+    "response": "The main ResearchMind AI architecture consists of:\n\n- **PDF Processing** – extracts research-paper text.\n- **Chunking** – divides text into smaller chunks.\n- **Sentence Transformers** – generates embeddings using all-MiniLM-L6-v2.\n- **FAISS** – stores and retrieves embeddings.\n- **RAG** – retrieves relevant paper context.\n- **Qwen2.5-3B-Instruct** – generates the final answer locally."
+  },
+  {
+    "keywords": ["pdf processing", "pdf extraction", "text extraction", "chunking", "how are pdfs processed", "how is pdf processed"],
+    "response": "ResearchMind AI processes uploaded PDFs by extracting their text, cleaning the content, dividing it into smaller chunks, generating embeddings for those chunks, and storing the embeddings in FAISS for later retrieval."
+  },
+  {
+    "keywords": ["chatbot", "research assistant", "how does the chatbot work", "how does chatbot work"],
+    "response": "The ResearchMind AI chatbot uses a **RAG pipeline**. When you ask a question, FAISS searches the vector database for relevant research-paper chunks. Those chunks are provided to the local Qwen2.5-3B-Instruct model, which generates the answer."
+  }
+]

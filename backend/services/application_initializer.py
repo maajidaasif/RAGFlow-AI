@@ -111,8 +111,14 @@ class ApplicationInitializer:
 
             metadata = os.path.join(
                 "vector_db",
-                "metadata.pkl"
+                "metadata.json"
             )
+
+            if not os.path.exists(vector_index) and not os.path.exists(metadata):
+                os.makedirs("vector_db", exist_ok=True)
+                self.vector_db_ready = True
+                print("      No documents indexed yet; starting with an empty index.")
+                return True
 
             if not os.path.exists(vector_index):
 

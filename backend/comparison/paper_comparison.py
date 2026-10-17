@@ -12,18 +12,24 @@ class PaperComparisonEngine:
         self.retriever = Retriever()
         self.domain_detector = DomainDetector()
 
-    def get_paper_names(self):
+    def get_paper_names(self, paper_names=None, max_papers=5):
 
-        paper_names = []
+        available_names = []
 
         for item in self.retriever.metadata:
 
             paper_name = item["paper_name"]
 
-            if paper_name not in paper_names:
-                paper_names.append(paper_name)
+            if paper_name not in available_names:
+                available_names.append(paper_name)
 
-        return paper_names
+        if paper_names is not None:
+            allowed_names = set(paper_names)
+            available_names = [
+                name for name in available_names if name in allowed_names
+            ]
+
+        return available_names[:max_papers]
 
     def clean_text(self, text):
 
@@ -99,9 +105,9 @@ class PaperComparisonEngine:
 
         return context
 
-    def get_all_paper_summaries(self):
+    def get_all_paper_summaries(self, paper_names=None, max_papers=5):
 
-        paper_names = self.get_paper_names()
+        paper_names = self.get_paper_names(paper_names, max_papers)
 
         summaries = []
 
@@ -257,10 +263,11 @@ class PaperComparisonEngine:
     def compare_category(
         self,
         category_name,
-        query
+        query,
+        paper_names=None
     ):
 
-        paper_names = self.get_paper_names()
+        paper_names = self.get_paper_names(paper_names)
 
         results = []
 
@@ -301,7 +308,14 @@ class PaperComparisonEngine:
             + "\n\n".join(results)
         )
 
-    def compare_papers(self):
+    def compare_papers(self, paper_names=None, max_papers=5):
+
+        paper_names = self.get_paper_names(paper_names, max_papers)
+        if not paper_names:
+            return {
+                "success": False,
+                "message": "No indexed papers available to compare."
+            }
 
         categories = [
 
@@ -341,7 +355,7 @@ class PaperComparisonEngine:
         # Detect Research Domain
         # ---------------------------------------
 
-        paper_summaries = self.get_all_paper_summaries()
+        paper_summaries = self.get_all_paper_summaries(paper_names, max_papers)
 
         domain = self.domain_detector.detect_domain(
             paper_summaries
@@ -361,7 +375,8 @@ class PaperComparisonEngine:
 
             result = self.compare_category(
                 category_name=category_name,
-                query=query
+                query=query,
+                paper_names=paper_names
             )
 
             comparison_results.append(result)
